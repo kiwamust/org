@@ -1,0 +1,52 @@
+name: Department Task（部門タスク）
+description: 局長が起票する個別タスク
+title: "TASK: "
+labels: ["org:type/task", "org:phase/planning"]
+body:
+  - type: input
+    id: project-ref
+    attributes:
+      label: 親プロジェクト
+      description: "親の PJ Issue 番号（例: #2）"
+    validations:
+      required: true
+  - type: dropdown
+    id: dept
+    attributes:
+      label: 担当局
+      options:
+        - R&D局
+        - Brand局
+        - EmergingTech局
+        - Engineering局
+        - Operations局
+    validations:
+      required: true
+  - type: input
+    id: assignee-agent
+    attributes:
+      label: 担当エージェント
+      description: "エージェント名（例: analyst, article-writer）"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: タスク内容
+      description: 何を、どのレベルで実行するか
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: 完了条件
+      description: 何を満たせばタスク完了か
+    validations:
+      required: true
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: 成果物
+      description: 生成するファイルパスまたは Issue comment の形式
+    validations:
+      required: false

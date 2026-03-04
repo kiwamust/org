@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: org ダッシュボード
+    url: https://github.com/kiwamust/org
+    about: ops/dashboard.sh でCLIダッシュボードを確認

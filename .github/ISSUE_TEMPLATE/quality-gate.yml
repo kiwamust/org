@@ -1,0 +1,49 @@
+name: Quality Gate（品質ゲート結果）
+description: Operations局の Quality Inspector が起票する品質ゲート検査結果
+title: "QG: "
+labels: ["org:type/quality-gate", "org:quality/gate-pending"]
+body:
+  - type: input
+    id: target-ref
+    attributes:
+      label: 検査対象
+      description: "対象の TASK/PJ Issue 番号（例: #5）"
+    validations:
+      required: true
+  - type: dropdown
+    id: gate-type
+    attributes:
+      label: ゲート種別
+      options:
+        - IQG（入力品質）
+        - PQG（中間品質）
+        - OQG（出力品質）
+    validations:
+      required: true
+  - type: textarea
+    id: checklist
+    attributes:
+      label: 検査結果
+      description: "チェックリストの各項目に OK/NG と不良コード・メモを記録"
+      value: |
+        | No | 項目 | 判定 | 不良コード | メモ |
+        | --: | ---- | :--: | ---------- | ---- |
+        | 1 |  | OK/NG |  |  |
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: 判定結果
+      options:
+        - 合格（gate-pass）
+        - 不合格（gate-fail）
+    validations:
+      required: true
+  - type: textarea
+    id: rework-instructions
+    attributes:
+      label: 差し戻し指示
+      description: 不合格の場合の修正指示（不良コード + 具体的な修正内容）
+    validations:
+      required: false

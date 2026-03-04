@@ -1,0 +1,47 @@
+name: Directive（指示）
+description: ユーザーから組織への指示。dispatch が GBT 分類・ルーティングを行う
+title: "DIR: "
+labels: ["org:type/directive"]
+body:
+  - type: textarea
+    id: directive
+    attributes:
+      label: 指示内容
+      description: 何を達成したいか
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      options:
+        - P1（緊急・重要）
+        - P2（重要）
+        - P3（通常）
+    validations:
+      required: true
+  - type: dropdown
+    id: quality-level
+    attributes:
+      label: 品質レベル
+      description: 品質ゲートの適用レベル
+      options:
+        - Draft（OQGのみ）
+        - Standard（3ゲート）
+        - Premium（全ゲート+複数レビュー）
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: 制約・補足
+      description: 期限、スコープ制限、参照資料など
+    validations:
+      required: false
+  - type: textarea
+    id: materials
+    attributes:
+      label: 材料
+      description: 入力資料、URL、Vault ノートパスなど
+    validations:
+      required: false

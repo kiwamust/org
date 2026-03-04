@@ -1,0 +1,59 @@
+name: Organization Project（組織プロジェクト）
+description: dispatch が起票するプロジェクト Issue
+title: "PJ: "
+labels: ["org:type/project", "org:phase/intake", "org:status/green"]
+body:
+  - type: input
+    id: directive-ref
+    attributes:
+      label: 元 Directive
+      description: "元の Directive Issue 番号（例: #1）"
+    validations:
+      required: true
+  - type: dropdown
+    id: gbt-class
+    attributes:
+      label: GBT 分類
+      options:
+        - Generation（価値探索・仮説生成）
+        - Behavior（計画・実装・テスト）
+        - Target（成果物完成・配信）
+    validations:
+      required: true
+  - type: dropdown
+    id: dept
+    attributes:
+      label: 主担当局
+      options:
+        - R&D局
+        - Brand局
+        - EmergingTech局
+        - Engineering局
+        - Operations局
+        - Cross（部門横断）
+    validations:
+      required: true
+  - type: dropdown
+    id: quality-level
+    attributes:
+      label: 品質レベル
+      options:
+        - Draft
+        - Standard
+        - Premium
+    validations:
+      required: true
+  - type: textarea
+    id: charter
+    attributes:
+      label: プロジェクトチャーター
+      description: 目的、DoD、スコープ、体制、制約
+    validations:
+      required: true
+  - type: textarea
+    id: task-breakdown
+    attributes:
+      label: タスク分解
+      description: タスク一覧と担当エージェント
+    validations:
+      required: false
