@@ -48,7 +48,7 @@ User directive → [dispatch/SOB] GBT分類 → 部門ルーティング → ✅
 | PQG (Process) | 中間品質 | 構造健全、根拠充足、一貫性       |
 | OQG (Output)  | 出力品質 | 要件充足、再利用性、体裁         |
 
-品質レベル: Draft（OQGのみ）/ Standard（3ゲート）/ Premium（全ゲート+複数レビュー）
+品質レベル: Draft（OQGのみ）/ Standard（3ゲート）/ Premium（全ゲート+複数レビュー）/ Scientific（全ゲート+追加項目+fact-check必須）
 
 ## GBT 分類
 
@@ -96,3 +96,22 @@ org:gbt/{generation,behavior,target}
 ## kiwamu.sato の役割
 
 PM（要所で判断に入る）。ゲート承認と方向転換の判断を担う。
+
+## タスク Issue ライフサイクル
+
+### タスク close の条件
+
+タスクは以下の**両条件**を満たした場合に close する:
+
+1. **TCC 合格**（Draft 品質レベルは免除）
+2. **親 PJ close**
+
+個別タスクが TCC に合格しても、親 PJ が open の間はタスク Issue は open のまま（`phase:done` ラベル）。
+
+### PJ close 時の処理
+
+PJ Issue を close する際、dispatch は以下を実行:
+
+1. 全子タスク Issue の状態を確認
+2. `phase:done` の子タスクを一括 close（comment: "Parent PJ #{number} closed"）
+3. `phase:done` 以外の子タスクがあればユーザーに報告（close するか判断を仰ぐ）

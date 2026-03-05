@@ -41,6 +41,7 @@ body:
         - Draft
         - Standard
         - Premium
+        - Scientific
     validations:
       required: true
   - type: textarea

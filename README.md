@@ -40,12 +40,59 @@ bash ops/dashboard.sh
 - **PQG** (Process): 中間品質
 - **OQG** (Output): 出力品質
 
+品質レベル: Draft / Standard / Premium / Scientific
+
+### TCC（タスク完了チェック）
+
+タスク → `phase:done` 遷移時の軽量3項目チェック（AC充足・成果物参照・スコープ逸脱）。Standard 以上で自動適用。
+
+### Fact-check
+
+品質フロー内の事実検証。Scientific/Premium は PQG 後に必須。Standard は R-type 不良検出時のみ。
+
+## Ops スクリプト
+
+```bash
+bash ops/dashboard.sh                    # 組織ダッシュボード
+bash ops/collect-qcd-metrics.sh          # V1-V15 メトリクス収集
+bash ops/calc-project-qcd.sh --project 1 # PJ 別 QCD 計算
+bash ops/resume-project.sh 1             # PJ 状態復元
+```
+
+### データ保存先（Vault 側）
+
+```
+~/Desktop/work/work/org/data/
+├── metrics/YYYY-MM-DD.json      # V1-V15 メトリクス
+├── qcd/project-qcd.csv          # PJ 別 QCD 値
+├── entropy/entropy-timeseries.csv
+└── experiments/<id>.json
+```
+
+## Safety Hooks
+
+PreToolUse hook で gh コマンドの安全性を検証:
+
+- `--repo kiwamust/org` 強制（cross-repo 防止）
+- `gh issue delete` ブロック
+- `gh issue close` ワーニング（非ブロック）
+
+## タスクライフサイクル
+
+タスク close の条件: TCC 合格 + 親 PJ close。PJ close 時に dispatch が子タスクを一括 close。
+
 ## リポジトリ構造
 
 ```
 .claude/skills/     # 局スキル定義
 agents/             # エージェント定義（system prompts）
 .github/            # Issue テンプレート
-ops/                # CLI ダッシュボード
+ops/
+├── dashboard.sh           # CLI ダッシュボード（stale issues + QCD サマリ）
+├── collect-qcd-metrics.sh # V1-V15 メトリクス自動収集
+├── calc-project-qcd.sh    # PJ 別 QCD 計算
+├── resume-project.sh      # PJ 状態復元
+└── hooks/
+    └── pre-gh-check.sh    # gh コマンド安全性検証（PreToolUse hook）
 docs/               # アーキテクチャドキュメント
 ```

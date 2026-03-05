@@ -29,6 +29,7 @@ body:
         - Draft（OQGのみ）
         - Standard（3ゲート）
         - Premium（全ゲート+複数レビュー）
+        - Scientific（全ゲート+追加項目+fact-check必須）
     validations:
       required: true
   - type: textarea

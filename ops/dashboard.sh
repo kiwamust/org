@@ -73,6 +73,52 @@ gh issue list --repo "$REPO" --state open --limit 10 --json number,title,labels 
   --jq '.[] | "#\(.number) \(.title) [\(.labels | map(.name) | join(", "))]"' 2>/dev/null || echo "(なし)"
 echo ""
 
+# --- Stale Issues (7日以上 execute でコメントなし) ---
+echo "## Stale Issues (>7d in execute)"
+echo ""
+
+# Get issues in execute phase
+SEVEN_DAYS_AGO=$(date -v-7d +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+
+STALE_OUTPUT=$(gh issue list --repo "$REPO" --label "org:phase/execute" --state open \
+  --json number,title,updatedAt \
+  --jq ".[] | select(.updatedAt < \"$SEVEN_DAYS_AGO\") | \"  ⚠️  #\(.number) \(.title) (last update: \(.updatedAt | split(\"T\")[0]))\"" 2>/dev/null || true)
+
+if [ -n "$STALE_OUTPUT" ]; then
+  echo "$STALE_OUTPUT"
+else
+  echo "  (なし)"
+fi
+echo ""
+
+# --- QCD サマリ (collect-qcd-metrics.sh 連携) ---
+METRICS_DIR="$HOME/Desktop/work/work/org/data/metrics"
+LATEST_METRICS=$(ls -t "$METRICS_DIR"/*.json 2>/dev/null | head -1)
+
+if [ -n "$LATEST_METRICS" ]; then
+  echo "## QCD サマリ ($(basename "$LATEST_METRICS" .json))"
+  echo ""
+  echo "  Velocity:"
+  printf "    Task throughput:  %s/week\n" "$(jq -r '.velocity.V1_throughput_weekly // "N/A"' "$LATEST_METRICS")"
+  printf "    Cycle time:       %s days\n" "$(jq -r '.velocity.V2_cycle_time_days // "N/A"' "$LATEST_METRICS")"
+  printf "    Gate pass rate:   %s\n" "$(jq -r '.velocity.V3_gate_pass_rate // "N/A"' "$LATEST_METRICS")"
+  echo ""
+  echo "  Quality:"
+  printf "    First-pass yield: %s\n" "$(jq -r '.quality.V6_first_pass_yield // "N/A"' "$LATEST_METRICS")"
+  printf "    Defect density:   %s\n" "$(jq -r '.quality.V7_defect_density // "N/A"' "$LATEST_METRICS")"
+  echo ""
+  echo "  Entropy:"
+  printf "    WIP count:        %s\n" "$(jq -r '.entropy.V11_wip_count // "N/A"' "$LATEST_METRICS")"
+  printf "    Blocked:          %s\n" "$(jq -r '.entropy.V13_blocked_count // "N/A"' "$LATEST_METRICS")"
+  printf "    Stale:            %s\n" "$(jq -r '.entropy.V14_stale_count // "N/A"' "$LATEST_METRICS")"
+  echo ""
+else
+  echo "## QCD サマリ"
+  echo ""
+  echo "  (メトリクスデータなし。ops/collect-qcd-metrics.sh を実行してください)"
+  echo ""
+fi
+
 echo "============================================"
 echo "  Total open issues: $(gh issue list --repo "$REPO" --state open --json number --jq 'length' 2>/dev/null || echo "0")"
 echo "============================================"
