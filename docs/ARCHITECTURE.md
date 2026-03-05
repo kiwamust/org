@@ -25,7 +25,8 @@
 │       │  │       │  │Scout  │  │Lead   │  │       │
 └───┬───┘  └───┬───┘  └───┬────┘  └───┬───┘  └───┬───┘
     │          │           │           │           │
- 5 agents  5 agents    5 agents    5 agents    5 agents
+ 5 sub-    5 sub-      5 sub-      5 sub-      5 sub-
+ agents   agents     agents     agents     agents
 ```
 
 ## GBT フレームワーク

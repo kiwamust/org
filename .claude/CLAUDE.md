@@ -55,6 +55,7 @@ User directive → [dispatch/SOB] GBT分類 → 部門ルーティング → ✅
 - `generation`: R&D主導の探索プロジェクト
 - `behavior`: Engineering主導の構築プロジェクト
 - `target`: Brand主導の配信プロジェクト
+- `mixed`: 複数フェーズにまたがる → `org:dept/cross` + 主担当局を指定
 
 ## GitHub Issues ラベル体系
 
