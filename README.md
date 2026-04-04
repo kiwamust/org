@@ -10,7 +10,7 @@ dispatch (SOB層)
 ├── Brand局       — 知を届ける（記事・スライド・Vlog）
 ├── EmergingTech局 — 未来を拓く（新技術探索・プロトタイプ）
 ├── Engineering局  — 動くものを作る（開発・DevOps）
-└── Operations局   — 組織を回す（品質管理・PMO・改善）
+└── Operations局   — 組織を回す（QAD本部・品質管理・PMO・改善）
 ```
 
 ## 理論的基盤
@@ -39,6 +39,8 @@ bash ops/dashboard.sh
 - **IQG** (Input): 入力品質
 - **PQG** (Process): 中間品質
 - **OQG** (Output): 出力品質
+
+Operations局は `org` の QAD本部として、UQGの運営だけでなく、不良コード体系、Hook/eval、再発防止を中央集約で担う。詳細は `docs/OPERATIONS_QAD_CHARTER.md` を参照。
 
 ## リポジトリ構造
 
