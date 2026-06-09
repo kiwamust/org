@@ -32,6 +32,16 @@ gh issue create --repo kiwamust/org \
 bash ops/dashboard.sh
 ```
 
+### Self-Prompting
+
+ユーザーが毎回 directive を直接書く代わりに、Org が open Issues / quality gate / Work 連携の状態を観測し、次に提案すべき directive 候補を生成できる。
+
+```bash
+bash ops/self-prompt.sh
+```
+
+このコマンドは proposal-only。候補生成時点では Issue 作成やラベル変更を行わない。承認後に `org-dispatch` が通常フローで directive を処理する。詳細は `docs/SELF_PROMPTING.md` を参照。
+
 ## 品質ゲート (UQG)
 
 全成果物は品質ゲートを通過する:

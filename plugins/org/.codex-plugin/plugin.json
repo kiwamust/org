@@ -1,7 +1,7 @@
 {
   "name": "org",
-  "version": "0.2.0",
-  "description": "Codex plugin for the kiwamust/org virtual AI organization: dispatch, department skills, Work Vault integration, agent role references, and UQG quality gates.",
+  "version": "0.3.0",
+  "description": "Codex plugin for the kiwamust/org virtual AI organization: self-prompting, dispatch, department skills, Work Vault integration, agent role references, and UQG quality gates.",
   "author": {
     "name": "kiwamust"
   },
@@ -9,12 +9,12 @@
   "interface": {
     "displayName": "kiwamust/org",
     "shortDescription": "Run the org virtual AI organization in Codex.",
-    "longDescription": "Ports the org dispatch and department skill system to Codex, including R&D, Brand, EmergingTech, Engineering, Operations, Work Obsidian Vault integration, bundled agent role prompts, architecture notes, and UQG quality gates.",
+    "longDescription": "Ports the org dispatch and department skill system to Codex, including self-prompt directive candidate generation, R&D, Brand, EmergingTech, Engineering, Operations, Work Obsidian Vault integration, bundled agent role prompts, architecture notes, and UQG quality gates.",
     "developerName": "kiwamust",
     "category": "Productivity",
     "capabilities": [
       "skills"
     ],
-    "defaultPrompt": "Use org-dispatch and org-work to structure this directive, connect it to Work Vault, and propose an org execution plan."
+    "defaultPrompt": "Use org-self-prompt when no explicit directive is provided. Use org-dispatch and org-work to structure approved directives, connect them to Work Vault, and propose an org execution plan."
   }
 }

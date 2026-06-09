@@ -44,7 +44,7 @@ Operations は Behavior と Target を横断する品質保証層であり、`or
 ## 実行フロー
 
 ```
-User directive
+Org self-prompt candidate or User directive
   ↓
 [dispatch/SOB] 構造化 → GBT分類 → 部門ルーティング → 体制提案 → ✅ ユーザー承認
   ↓
@@ -56,6 +56,21 @@ User directive
   ↓ (合格)
 [dispatch] 完了報告 → ✅ ユーザー最終承認
 ```
+
+## Self-Prompting 入口
+
+従来の入口は `User directive` のみだった。`org` はこれを拡張し、`Observe -> Extract Signals -> Generate Directive Candidates -> UQG Self-Check -> User Approval` の self-prompt 入口を持つ。
+
+Self-prompt は dispatch の代替ではない。dispatch に渡す前の directive 候補を作るだけであり、候補生成時点では Issue 作成、label 変更、phase 遷移を行わない。
+
+主な signal:
+
+- `org:quality/gate-fail`: gate recovery directive 候補
+- `org:status/red`: escalation / recovery directive 候補
+- Issue / Work link 欠落: org-work repair directive 候補
+- open Issue なし: intake baseline refresh directive 候補
+
+詳細は `docs/SELF_PROMPTING.md` を参照。
 
 ## 品質ゲートフレームワーク (UQG)
 
