@@ -10,7 +10,7 @@ dispatch (SOB層)
 ├── Brand局       — 知を届ける（記事・スライド・Vlog）
 ├── EmergingTech局 — 未来を拓く（新技術探索・プロトタイプ）
 ├── Engineering局  — 動くものを作る（開発・DevOps）
-└── Operations局   — 組織を回す（品質管理・PMO・改善）
+└── Operations局   — 組織を回す（QAD本部・品質管理・PMO・改善）
 ```
 
 ## 理論的基盤
@@ -32,6 +32,16 @@ gh issue create --repo kiwamust/org \
 bash ops/dashboard.sh
 ```
 
+### Self-Prompting
+
+ユーザーが毎回 directive を直接書く代わりに、Org が open Issues / quality gate / Work 連携の状態を観測し、次に提案すべき directive 候補を生成できる。
+
+```bash
+bash ops/self-prompt.sh
+```
+
+このコマンドは proposal-only。候補生成時点では Issue 作成やラベル変更を行わない。承認後に `org-dispatch` が通常フローで directive を処理する。詳細は `docs/SELF_PROMPTING.md` を参照。
+
 ## 品質ゲート (UQG)
 
 全成果物は品質ゲートを通過する:
@@ -39,6 +49,8 @@ bash ops/dashboard.sh
 - **IQG** (Input): 入力品質
 - **PQG** (Process): 中間品質
 - **OQG** (Output): 出力品質
+
+Operations局は `org` の QAD本部として、UQGの運営だけでなく、不良コード体系、Hook/eval、再発防止を中央集約で担う。詳細は `docs/OPERATIONS_QAD_CHARTER.md` を参照。
 
 品質レベル: Draft / Standard / Premium / Scientific
 

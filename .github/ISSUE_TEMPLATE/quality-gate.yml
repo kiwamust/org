@@ -1,5 +1,5 @@
 name: Quality Gate（品質ゲート結果）
-description: Operations局の Quality Inspector が起票する品質ゲート検査結果
+description: Operations局QAD本部の Quality Inspector が起票する品質ゲート検査結果
 title: "QG: "
 labels: ["org:type/quality-gate", "org:quality/gate-pending"]
 body:
@@ -24,7 +24,7 @@ body:
     id: checklist
     attributes:
       label: 検査結果
-      description: "チェックリストの各項目に OK/NG と不良コード・メモを記録"
+      description: "チェックリストの各項目に OK/NG と不良コード・メモを記録。横断不良は Q01-Q08 を使用"
       value: |
         | No | 項目 | 判定 | 不良コード | メモ |
         | --: | ---- | :--: | ---------- | ---- |

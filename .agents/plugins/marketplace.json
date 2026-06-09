@@ -1,0 +1,20 @@
+{
+  "name": "org-local",
+  "interface": {
+    "displayName": "org local plugins"
+  },
+  "plugins": [
+    {
+      "name": "org",
+      "source": {
+        "source": "local",
+        "path": "./plugins/org"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -6,7 +6,8 @@
 2. **承認ゲート不可侵**: ユーザー承認なしに工程を進めない
 3. **HAAS 階層**: dispatch=SOB層 → 局長=Executive層 → 担当者=SubAgent層。ネスト2段制限
 4. **品質ゲート必須**: UQG フレームワークを全局適用
-5. **GBT マッピング**: Generation → Behavior → Target の流れで全プロジェクトを構造化
+5. **QAD本部の中央集約**: Operations は品質基準・不良コード・Gate・Hook/eval を一元管理
+6. **GBT マッピング**: Generation → Behavior → Target の流れで全プロジェクトを構造化
 
 ## HAAS 階層マッピング
 
@@ -38,12 +39,12 @@
 | Target       | Brand       | 成果物完成・配信・KPI計測 |
 
 EmergingTech は Generation と Behavior の「あわい」。
-Operations は Behavior と Target を横断する品質保証層。
+Operations は Behavior と Target を横断する品質保証層であり、`org` の QAD本部でもある。
 
 ## 実行フロー
 
 ```
-User directive
+Org self-prompt candidate or User directive
   ↓
 [dispatch/SOB] 構造化 → GBT分類 → 部門ルーティング → 体制提案 → ✅ ユーザー承認
   ↓
@@ -51,10 +52,25 @@ User directive
   ↓
 [局長/Executive] → [担当エージェント/SubAgent] 実行 → Issue に進捗記録
   ↓
-[operations/quality-inspector] 品質ゲート検査
+[operations/QAD-HQ] 品質ゲート検査 / 不良コード管理 / 再発防止
   ↓ (合格)
 [dispatch] 完了報告 → ✅ ユーザー最終承認
 ```
+
+## Self-Prompting 入口
+
+従来の入口は `User directive` のみだった。`org` はこれを拡張し、`Observe -> Extract Signals -> Generate Directive Candidates -> UQG Self-Check -> User Approval` の self-prompt 入口を持つ。
+
+Self-prompt は dispatch の代替ではない。dispatch に渡す前の directive 候補を作るだけであり、候補生成時点では Issue 作成、label 変更、phase 遷移を行わない。
+
+主な signal:
+
+- `org:quality/gate-fail`: gate recovery directive 候補
+- `org:status/red`: escalation / recovery directive 候補
+- Issue / Work link 欠落: org-work repair directive 候補
+- open Issue なし: intake baseline refresh directive 候補
+
+詳細は `docs/SELF_PROMPTING.md` を参照。
 
 ## 品質ゲートフレームワーク (UQG)
 
@@ -78,10 +94,20 @@ KPLS の IQC/IPQC/FQC を一般化:
 ### 不良コード体系
 
 - D01-D34: KPLS 既存（知的生産全般）
+- Q01-Q08: QAD本部の横断不良コード（構造・依存・Handoff）
 - E01-E10: Engineering 局固有（コード品質）
 - R01-R10: R&D 局固有（調査品質）
 - B01-B10: Brand 局固有（コンテンツ品質）
 - T01-T10: EmergingTech 局固有（技術評価品質）
+
+### QAD本部
+
+Operations局は `hub-and-spoke` で品質制度を運営する。
+
+- `hub`: Operations / QAD本部。品質基準、不良コード、UQG、Hook/eval、回帰防止を管理
+- `spoke`: 各局QAD liaison。局内成果物へ中央基準を適用し、不良コードを起票
+
+詳細は `docs/OPERATIONS_QAD_CHARTER.md` を参照。
 
 ## GitHub Issues ラベル体系
 

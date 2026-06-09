@@ -21,14 +21,14 @@
 - **Brand局**: kiwamu.sato のブランド構築と発信。Anti-Convergence 死守
 - **EmergingTech局**: 新技術の探索・評価・プロトタイピング。組織自体の進化エンジン
 - **Engineering局**: 本番品質のソフトウェア開発。コードの品質と保守性を担保
-- **Operations局**: 品質管理・PM支援・プロセス改善・メトリクス。UQG を全局に展開
+- **Operations局**: QAD本部。品質管理・PM支援・プロセス改善・メトリクス。UQG、不良コード、Hook/eval を全局に展開
 
 ## 実行フロー
 
 ```
 User directive → [dispatch/SOB] GBT分類 → 部門ルーティング → ✅ ユーザー承認
 → PJ起票 → タスク分解 → [局長/Executive] → [担当/SubAgent] → Issue に進捗記録
-→ [operations/quality-inspector] 品質ゲート → ✅ ユーザー最終承認
+→ [operations/QAD-HQ] 品質ゲート / 不良コード管理 / 再発防止 → ✅ ユーザー最終承認
 ```
 
 ## 承認ゲート（不可侵）
@@ -50,6 +50,8 @@ User directive → [dispatch/SOB] GBT分類 → 部門ルーティング → ✅
 
 品質レベル: Draft（OQGのみ）/ Standard（3ゲート）/ Premium（全ゲート+複数レビュー）/ Scientific（全ゲート+追加項目+fact-check必須）
 
+Operations局は `hub-and-spoke` の QAD本部として動く。中央で品質基準・不良コード・Gate・Hook/eval を管理し、各局は `QAD liaison` で局所適用する。
+
 ## GBT 分類
 
 - `generation`: R&D主導の探索プロジェクト
@@ -68,6 +70,10 @@ org:priority/{p1,p2,p3}
 org:quality/{gate-pending,gate-pass,gate-fail}
 org:gbt/{generation,behavior,target}
 ```
+
+## 横断不良コード
+
+- `Q01-Q08`: QAD本部の横断不良コード。基盤定義欠落、依存未閉包、DoD非自己完結、Tier監査不能、契約/暫定混線、Handoff不完全、合流依存矛盾、ゲート判定非自己完結を扱う
 
 ## 共有知識基盤
 
