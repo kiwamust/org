@@ -34,6 +34,19 @@ assert_contains "$output" "Priority: p1"
 assert_contains "$output" "Evidence: #31"
 assert_contains "$output" "No GitHub Issue is created until the user approves one candidate."
 
+cat >"$TMPDIR/live-shape.tsv" <<'EOF'
+23	PJ: Research Support AI MVP	org:type/project,org:status/green,org:dept/rnd,org:priority/p2
+20	QG: QCD Path C IQG	org:type/quality-gate,org:status/yellow,org:quality/gate-pending,org:dept/operations,org:priority/p1
+EOF
+
+priority_output="$("$ROOT/ops/self-prompt.sh" --from-file "$TMPDIR/live-shape.tsv")"
+
+assert_contains "$priority_output" "Selected signal: #20"
+assert_contains "$priority_output" "Title: DIR: Advance pending quality gate #20 - QG: QCD Path C IQG"
+assert_contains "$priority_output" "GBT: behavior"
+assert_contains "$priority_output" "Dept: operations"
+assert_contains "$priority_output" "Priority: p1"
+
 empty_output="$("$ROOT/ops/self-prompt.sh" --from-file /dev/null)"
 
 assert_contains "$empty_output" "No open org issues were observed."

@@ -52,7 +52,13 @@ contains_label() {
 
 priority_for() {
   local labels="$1"
-  if contains_label "$labels" "org:status/red" || contains_label "$labels" "org:quality/gate-fail"; then
+  if contains_label "$labels" "org:priority/p1"; then
+    echo "p1"
+  elif contains_label "$labels" "org:priority/p2"; then
+    echo "p2"
+  elif contains_label "$labels" "org:priority/p3"; then
+    echo "p3"
+  elif contains_label "$labels" "org:status/red" || contains_label "$labels" "org:quality/gate-fail"; then
     echo "p1"
   elif contains_label "$labels" "org:status/yellow" || contains_label "$labels" "org:quality/gate-pending"; then
     echo "p2"
@@ -64,13 +70,15 @@ priority_for() {
 dept_for() {
   local labels="$1"
   local title="$2"
+  local lower_title
+  lower_title="$(printf '%s' "$title" | tr '[:upper:]' '[:lower:]')"
   for dept in operations engineering rnd brand emergingtech cross; do
     if contains_label "$labels" "org:dept/$dept"; then
       echo "$dept"
       return
     fi
   done
-  case "${title,,}" in
+  case "$lower_title" in
     *quality*|*gate*|*handoff*|*qad*) echo "operations" ;;
     *code*|*build*|*test*|*fix*) echo "engineering" ;;
     *article*|*slide*|*vlog*|*brand*) echo "brand" ;;
@@ -83,6 +91,8 @@ dept_for() {
 gbt_for() {
   local labels="$1"
   local title="$2"
+  local lower_title
+  lower_title="$(printf '%s' "$title" | tr '[:upper:]' '[:lower:]')"
   if contains_label "$labels" "org:quality/gate-fail" || contains_label "$labels" "org:quality/gate-pending"; then
     echo "behavior"
     return
@@ -93,7 +103,7 @@ gbt_for() {
       return
     fi
   done
-  case "${title,,}" in
+  case "$lower_title" in
     *research*|*synthesis*|*hypothesis*|*survey*) echo "generation" ;;
     *article*|*slide*|*vlog*|*publish*) echo "target" ;;
     *) echo "behavior" ;;
@@ -114,6 +124,23 @@ candidate_title_for() {
     echo "DIR: Stabilize yellow org issue #$number - $title"
   else
     echo "DIR: Progress org issue #$number - $title"
+  fi
+}
+
+signal_score_for() {
+  local labels="$1"
+  if contains_label "$labels" "org:quality/gate-fail"; then
+    echo 100
+  elif contains_label "$labels" "org:status/red"; then
+    echo 90
+  elif contains_label "$labels" "org:quality/gate-pending"; then
+    echo 80
+  elif contains_label "$labels" "org:status/yellow"; then
+    echo 70
+  elif contains_label "$labels" "org:phase/blocked"; then
+    echo 60
+  else
+    echo 10
   fi
 }
 
@@ -189,8 +216,10 @@ EOF
 }
 
 main() {
-  local first_line=""
+  local selected_line=""
   local issues_output=""
+  local best_score=-1
+  local score
 
   if ! issues_output="$(read_issues)"; then
     cat >&2 <<EOF
@@ -202,16 +231,19 @@ EOF
 
   while IFS=$'\t' read -r number title labels _; do
     [[ -z "${number:-}" ]] && continue
-    first_line="$number"$'\t'"$title"$'\t'"${labels:-}"
-    break
+    score="$(signal_score_for "${labels:-}")"
+    if [[ "$score" -gt "$best_score" ]]; then
+      best_score="$score"
+      selected_line="$number"$'\t'"$title"$'\t'"${labels:-}"
+    fi
   done <<<"$issues_output"
 
-  if [[ -z "$first_line" ]]; then
+  if [[ -z "$selected_line" ]]; then
     emit_empty_candidate
     return
   fi
 
-  IFS=$'\t' read -r number title labels <<<"$first_line"
+  IFS=$'\t' read -r number title labels <<<"$selected_line"
   emit_candidate "$number" "$title" "${labels:-}"
 }
 
