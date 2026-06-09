@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Regression tests for the scheduled self-prompt automation contract.
+# Regression tests for the Codex Automation self-prompt contract.
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-WORKFLOW="$ROOT/.github/workflows/org-self-prompt.yml"
+GITHUB_WORKFLOW="$ROOT/.github/workflows/org-self-prompt.yml"
+CODEX_AUTOMATION="$ROOT/docs/CODEX_AUTOMATION_SELF_PROMPT.md"
 
 assert_file_contains() {
   local file="$1"
@@ -15,20 +16,24 @@ assert_file_contains() {
   fi
 }
 
-if [[ ! -f "$WORKFLOW" ]]; then
-  echo "Missing workflow: $WORKFLOW" >&2
+if [[ -f "$GITHUB_WORKFLOW" ]]; then
+  echo "GitHub Actions workflow must not exist: $GITHUB_WORKFLOW" >&2
   exit 1
 fi
 
-assert_file_contains "$WORKFLOW" "name: Org Self-Prompt"
-assert_file_contains "$WORKFLOW" "- cron: '0 23 * * *' # 08:00 JST"
-assert_file_contains "$WORKFLOW" "- cron: '0 4 * * *' # 13:00 JST"
-assert_file_contains "$WORKFLOW" "- cron: '0 10 * * *' # 19:00 JST"
-assert_file_contains "$WORKFLOW" "workflow_dispatch:"
-assert_file_contains "$WORKFLOW" "issues: read"
-assert_file_contains "$WORKFLOW" "GH_TOKEN: \${{ github.token }}"
-assert_file_contains "$WORKFLOW" "bash ops/self-prompt.sh"
-assert_file_contains "$WORKFLOW" "self-prompt.md"
-assert_file_contains "$WORKFLOW" "actions/upload-artifact@v4"
+if [[ ! -f "$CODEX_AUTOMATION" ]]; then
+  echo "Missing Codex Automation contract: $CODEX_AUTOMATION" >&2
+  exit 1
+fi
+
+assert_file_contains "$CODEX_AUTOMATION" "# Codex Automation — Org Self-Prompt"
+assert_file_contains "$CODEX_AUTOMATION" "08:00 JST"
+assert_file_contains "$CODEX_AUTOMATION" "13:00 JST"
+assert_file_contains "$CODEX_AUTOMATION" "19:00 JST"
+assert_file_contains "$CODEX_AUTOMATION" "Do not create Issues"
+assert_file_contains "$CODEX_AUTOMATION" "Do not change labels"
+assert_file_contains "$CODEX_AUTOMATION" "Do not push changes"
+assert_file_contains "$CODEX_AUTOMATION" "bash ops/self-prompt.sh"
+assert_file_contains "$CODEX_AUTOMATION" "approval question"
 
 echo "self-prompt automation tests passed"

@@ -42,12 +42,12 @@ bash ops/self-prompt.sh
 
 このコマンドは proposal-only。候補生成時点では Issue 作成やラベル変更を行わない。承認後に `org-dispatch` が通常フローで directive を処理する。詳細は `docs/SELF_PROMPTING.md` を参照。
 
-### Self-Prompt Automation
+### Codex Self-Prompt Automation
 
-GitHub Actions で毎日 08:00 / 13:00 / 19:00 JST に self-prompt を実行する。workflow は候補を生成して job summary と artifact に保存するだけで、Issue 作成や label 変更は行わない。
+Codex Automation で毎日 08:00 / 13:00 / 19:00 JST に self-prompt を実行する。Automation は候補を提示して承認を求めるだけで、Issue 作成や label 変更は行わない。
 
 ```text
-.github/workflows/org-self-prompt.yml
+docs/CODEX_AUTOMATION_SELF_PROMPT.md
 ```
 
 ## 品質ゲート (UQG)
