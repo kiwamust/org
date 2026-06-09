@@ -12,7 +12,7 @@ Run this Codex Automation every day:
 
 Org should prompt the user with the next directive candidate instead of waiting for the user to manually inspect org state.
 
-This automation is presentation-only. It observes state, compresses the next useful directive candidate, and asks for approval. It must not mutate GitHub, Work Vault, or local git state.
+This automation is write-capable within the org repository working tree when that is needed to persist observation artifacts, candidate notes, or reproducibility logs. It observes state, may write local org-owned artifacts, compresses the next useful directive candidate, and asks for approval. It must not mutate GitHub, Work Vault, commits, branches, or remotes without explicit user approval.
 
 ## Prompt
 
@@ -32,6 +32,8 @@ Required steps:
 4. If it succeeds, summarize the top candidate using org-self-prompt.
 
 Strict constraints:
+- May write under /Users/kiwamusato/Work/org/org only for org-owned observation artifacts, candidate notes, or reproducibility logs.
+- If files were written, report their paths under Observed signal.
 - Do not create Issues.
 - Do not change labels.
 - Do not close Issues.
@@ -59,7 +61,7 @@ The approval question must be explicit and should ask whether org-dispatch may p
 
 GitHub Actions must not be used for this loop. Scheduled execution belongs to Codex Automation so the prompt appears in the user's active work surface.
 
-Repo-side files only define and test the automation contract:
+Repo-side files define, test, and may persist local artifacts for the automation contract:
 
 - `ops/self-prompt.sh`: proposal-only candidate generator
 - `ops/test_self_prompt.sh`: self-prompt behavior tests

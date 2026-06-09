@@ -44,7 +44,7 @@ bash ops/self-prompt.sh
 
 ### Codex Self-Prompt Automation
 
-Codex Automation で毎日 08:00 / 13:00 / 19:00 JST に self-prompt を実行する。Automation は候補を提示して承認を求めるだけで、Issue 作成や label 変更は行わない。
+Codex Automation で毎日 08:00 / 13:00 / 19:00 JST に self-prompt を実行する。Automation は `org` repo 内の観測 artifact / 候補メモ / 再現ログを書いてよいが、Issue 作成・label 変更・Work Vault への書き込み・commit・push は行わない。候補提示後、`org-dispatch` に渡すかをユーザーに確認する。
 
 ```text
 docs/CODEX_AUTOMATION_SELF_PROMPT.md
