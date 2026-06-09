@@ -84,11 +84,12 @@ KPLS の IQC/IPQC/FQC を一般化:
 
 ### 品質レベル
 
-| レベル   | ゲート                | 用途                 |
-| -------- | --------------------- | -------------------- |
-| Draft    | OQG のみ              | 簡易タスク、内部メモ |
-| Standard | IQG+PQG+OQG           | 標準プロジェクト     |
-| Premium  | 全ゲート+複数レビュー | 外部公開・重要成果物 |
+| レベル     | ゲート                           | 用途                         |
+| ---------- | -------------------------------- | ---------------------------- |
+| Draft      | OQG のみ                         | 簡易タスク、内部メモ         |
+| Standard   | IQG+PQG+OQG                      | 標準プロジェクト             |
+| Premium    | 全ゲート+複数レビュー            | 外部公開・重要成果物         |
+| Scientific | 全ゲート+追加項目+fact-check必須 | 学術研究・定式化プロジェクト |
 
 ### 不良コード体系
 
@@ -118,6 +119,61 @@ org:phase/{intake,planning,execute,review,done,blocked}
 org:priority/{p1,p2,p3}
 org:quality/{gate-pending,gate-pass,gate-fail}
 org:gbt/{generation,behavior,target}
+```
+
+## TCC（タスク完了チェック）
+
+タスク → `phase:done` 遷移時の軽量品質チェック。UQG とは独立したタスクレベルの完了確認。
+
+|  No | チェック項目 | 判定基準                                  |
+| --: | ------------ | ----------------------------------------- |
+|   1 | AC 充足      | 完了条件を全て満たしているか              |
+|   2 | 成果物参照   | 成果物が Issue comment に参照されているか |
+|   3 | スコープ逸脱 | スコープ外の追加作業がないか              |
+
+適用: Standard 以上で自動。Draft はオプション。
+
+## Fact-check フロー
+
+| 品質レベル | fact-check | トリガー                            |
+| ---------- | :--------: | ----------------------------------- |
+| Draft      |     -      | N/A                                 |
+| Standard   |   条件付   | PQG で R-type 不良（R01-R10）検出時 |
+| Premium    |     ✓      | PQG 完了後に自動                    |
+| Scientific |     ✓      | PQG 完了後に自動（必須）            |
+
+フロー: PQG → (条件判定) → fact-check → OQG
+
+## タスクライフサイクル
+
+タスク close 条件: TCC 合格（Draft 免除） + 親 PJ close。
+PJ close 時: dispatch が全子タスクを一括 close。
+
+## Safety Hooks
+
+PreToolUse hook (`ops/hooks/pre-gh-check.sh`) で gh コマンドの安全性を検証:
+
+- `--repo kiwamust/org` 強制（cross-repo 防止）
+- `gh issue delete` ブロック
+- `gh issue close` ワーニング（非ブロック）
+
+## Ops スクリプト
+
+| スクリプト               | 目的                              |
+| ------------------------ | --------------------------------- |
+| `dashboard.sh`           | 組織ダッシュボード（stale + QCD） |
+| `collect-qcd-metrics.sh` | V1-V15 メトリクス自動収集         |
+| `calc-project-qcd.sh`    | PJ 別 QCD 計算（D, C, ε, Π）      |
+| `resume-project.sh`      | PJ 状態復元（コンテキスト回復）   |
+
+### データディレクトリ構造（Vault 側）
+
+```
+~/Desktop/work/work/org/data/
+├── metrics/YYYY-MM-DD.json
+├── qcd/project-qcd.csv
+├── entropy/entropy-timeseries.csv
+└── experiments/<experiment-id>.json
 ```
 
 ## 外部連携

@@ -146,6 +146,23 @@ Vault 内の既存知識を横断的に統合し、新しい構造を与える�
 
 4. 検証結果を Issue に記録し、research-director に報告
 
+## Operations 局からの fact-check トリガー
+
+品質フロー上、Operations 局から以下の条件で fact-check 依頼が発生する:
+
+| 条件                              | 品質レベル          |
+| --------------------------------- | ------------------- |
+| PQG で R-type 不良（R01-R10）検出 | Standard            |
+| PQG 完了後に自動実行              | Premium, Scientific |
+
+### 対応フロー
+
+1. dispatch 経由で fact-check 依頼を受信（対象 Issue 番号 + PQG 結果を含む）
+2. fact-checker が Workflow C に従い検証を実行
+3. 検証結果を対象 Issue comment に記録（信頼性レベル A-D 付き）
+4. dispatch 経由で Operations 局に完了報告
+5. Operations 局は fact-check 結果を踏まえて OQG を実施
+
 ## 不良コード体系（R01-R10）
 
 | コード | 不良内容                               |

@@ -95,10 +95,11 @@ gh issue create --repo kiwamust/org \
 
 局長から完了報告を受けたら:
 
-1. Operations 局の品質ゲート結果を確認
-2. 成果物をユーザーに提示
-3. **ユーザー最終承認** を取る
-4. 承認後、PJ Issue を close
+1. タスクレベル: Operations 局に TCC（タスク完了チェック）を依頼（Standard以上）
+2. PJ レベル: Operations 局の UQG 品質ゲート結果を確認
+3. 成果物をユーザーに提示
+4. **ユーザー最終承認** を取る
+5. 承認後、PJ Issue を close
 
 ## Workflow: エスカレーション
 
@@ -108,6 +109,29 @@ gh issue create --repo kiwamust/org \
 - 品質ゲート2回連続不合格
 - スコープ変更が必要な状況
 - 部門間の優先度競合
+
+## Workflow: PJ Close — タスクライフサイクル管理
+
+タスク close の条件: TCC 合格（Draft 免除） + 親 PJ close。
+PJ Issue を close する際に実行する:
+
+### Step 1: 子タスク一覧取得
+
+PJ Issue 番号に関連する子タスク Issue を特定（body 内の `Parent: #X` 参照 or Issue comments で関連付けられたタスク）。
+
+### Step 2: 状態確認
+
+| 子タスク状態 | 対応                                    |
+| ------------ | --------------------------------------- |
+| phase:done   | close（comment: "Parent PJ #X closed"） |
+| それ以外     | ユーザーに報告し判断を仰ぐ              |
+
+### Step 3: 一括 close
+
+```bash
+gh issue close {task_number} --repo kiwamust/org \
+  --comment "Parent PJ #{pj_number} closed. タスク完了により close。"
+```
 
 ## 制約
 

@@ -18,11 +18,26 @@
       "Bash(ls *)",
       "Bash(ls)",
       "Bash(mkdir *)",
+      "Bash(chmod *)",
+      "Bash(bash ops/*.sh *)",
       "Task(*)"
     ],
     "ask": [
       "Bash(git push *)",
       "Bash(rm *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ops/hooks/pre-gh-check.sh"
+          }
+        ]
+      }
     ]
   }
 }
