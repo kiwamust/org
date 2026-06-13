@@ -17,7 +17,7 @@ This automation is write-capable within the org repository working tree when tha
 ## Prompt
 
 ```text
-Open /Users/kiwamusato/Work/org/org.
+Open /Users/kiwamusato/Work/org.
 
 You are running the Codex Automation for org self-prompting.
 
@@ -32,7 +32,7 @@ Required steps:
 4. If it succeeds, summarize the top candidate using org-self-prompt.
 
 Strict constraints:
-- May write under /Users/kiwamusato/Work/org/org only for org-owned observation artifacts, candidate notes, or reproducibility logs.
+- May write under /Users/kiwamusato/Work/org only for org-owned observation artifacts, candidate notes, or reproducibility logs.
 - If files were written, report their paths under Observed signal.
 - Do not create Issues.
 - Do not change labels.
