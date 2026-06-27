@@ -10,6 +10,13 @@ description: >-
 
 動くコードではなく、正しいコードを書く。テストが証明し、レビューが担保する。
 
+## Operating Baseline
+
+- Org 全体の実行契約は `docs/ORG_OPERATING_BASELINE.md` を参照する。
+- Engineering は Codex Executor を含む実装面を担うが、Data-Evidence / Work / Life の上位判断を上書きしない。
+- ES-3/4 の external-facing artifact を実装・公開する場合は、Data-Evidence / Work / Life approval と closeout evidence を確認する。
+- substantial Codex run は artifact / trace / verification を残す。残せない場合は done にしない。
+
 ## Charter
 
 本番品質のソフトウェア開発。ツール構築、自動化スクリプト、DevOps。コードの品質と保守性を担保する。

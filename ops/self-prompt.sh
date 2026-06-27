@@ -171,7 +171,7 @@ Priority: p2
 Evidence: issue list was empty
 
 Prompt:
-Observe Work/Vault project seeds, current org docs, and recent decisions. Propose the next smallest org directive that would create durable state without fabricating user intent.
+Observe Work/Vault project seeds, current org docs, recent decisions, and the Org operating baseline. Propose the next smallest org directive that would create durable state without fabricating user intent. Include data_profile, next_circulation, and WIP check.
 
 Approval gate:
 No GitHub Issue is created until the user approves one candidate.
@@ -196,16 +196,19 @@ Observation:
 - Source: $REPO open issues
 - Mode: proposal-only
 - Selected signal: #$number
+- Authority: Data-Evidence > Work > Life > Org > Codex
 
 ## Candidate 1
 Title: $candidate_title
 GBT: $gbt
 Dept: $dept
 Priority: $priority
+Data_profile: unknown
+Next circulation: Org
 Evidence: #$number "$title" [$labels]
 
 Prompt:
-Use org-dispatch to structure this directive. Diagnose the observed signal, define the smallest recoverable DoD, route it to $dept with Operations/QAD oversight, and return a plan for user approval before creating or mutating Issues.
+Use org-dispatch to structure this directive. Diagnose the observed signal, define the smallest recoverable DoD, assign data_profile ES-0..ES-4, set next_circulation, check WIP limits, route it to $dept with Operations/QAD oversight, and return a plan for user approval before creating or mutating Issues.
 
 Approval gate:
 No GitHub Issue is created until the user approves one candidate.

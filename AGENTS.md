@@ -31,6 +31,46 @@ User directive → [dispatch/SOB] GBT分類 → 部門ルーティング → ✅
 → [operations/QAD-HQ] 品質ゲート / 不良コード管理 / 再発防止 → ✅ ユーザー最終承認
 ```
 
+## Authority Ladder / Evidence Strictness
+
+Org の実行判断は `docs/ORG_OPERATING_BASELINE.md` を正本とし、衝突時は必ず次の順序で解決する。
+
+```text
+Data-Evidence > Work > Life > Org > Codex
+```
+
+- Data-Evidence: observed fact / metric / citation / lineage / confidence / access class の正
+- Work: ontology / claim / source inventory / artifact meaning の正
+- Life: portfolio priority / continue-stop-integrate-publish / final DoD の正
+- Org: execution plan / role / phase / UQG / WIP / handoff の正
+- Codex: observation / draft / patch / verification proposal。長期状態の正本ではない
+
+Evidence Strictness は `ES-0..ES-4` で issue ごとに設定する。ES-3/4 の external-facing artifact は Data-Evidence / Work / Life の上位 gate と矛盾してはならない。ES-4 の waiver は原則禁止し、例外は owner / reason / expiry / risk acceptance を必須にする。
+
+## Issue / Gate Contract
+
+Org issue は最低限次を持つ:
+
+- `parent_project` または `work_ref`
+- `data_profile: ES-0..ES-4`
+- `role`
+- `phase`
+- `expected_return`
+- `gate.type/status/required_evidence`
+- `closeout_evidence`
+- `next_circulation`
+
+Gate status は `pending|pass|fail|waived`。`pass` は Data-Evidence / Work / Life の上位判断と矛盾しない場合だけ使う。
+
+## WIP Safety Limits
+
+| WIP type | 既定 limit | 超過時 |
+| --- | ---: | --- |
+| Active parent project | 3 | Life review なしに追加不可 |
+| Active Org tasks / pilot | 7 | new task intake を止め、close / merge を優先 |
+| ES-3/4 external-facing artifacts | 2 | reviewer / evidence 確保まで追加不可 |
+| Codex substantial runs without trace | 0 after grace | trace missing を improvement candidate 化 |
+
 ## 承認ゲート（不可侵）
 
 ユーザー承認なしに工程を進めない。以下のポイントで必ず承認を取る:
@@ -92,6 +132,8 @@ org:gbt/{generation,behavior,target}
 ## 制約
 
 - **Issues が真実**: 全状態を Issues に記録。エージェントは揮発する
+- **Authority Ladder**: Org は Data-Evidence / Work / Life を上書きしない
+- **Evidence Strictness**: 外部性・不可逆性・公開性・調達/法務/研究リスクに応じて ES-0..ES-4 を設定する
 - **ネスト2段制限**: dispatch → 局長 → 担当。これ以上深くしない
 - **system prompt 200行以内**: 各エージェント定義は簡潔に
 - **成果物は即永続化**: コンテキスト消失に備え、成果物は即座に Issue or ファイルに記録

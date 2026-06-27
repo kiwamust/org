@@ -14,7 +14,11 @@ description: >-
 
 - Engineering局のロール定義は `../../assets/agents/engineering/*.md` を必要時に読む。
 - org 全体設計は `../../assets/docs/ARCHITECTURE.md` を参照する。
+- Org の実行契約は `../../assets/docs/ORG_OPERATING_BASELINE.md` を正本にする。
 - Codex の開発者指示と既存 repo 規約を最優先し、その上に org の TDD・レビュー・不良コード体系を重ねる。
+- Engineering は Codex Executor を含む実装面を担うが、Data-Evidence / Work / Life の上位判断を上書きしない。
+- ES-3/4 の external-facing artifact を実装・公開する場合は、Data-Evidence / Work / Life approval と closeout evidence を確認する。
+- substantial Codex run は artifact / trace / verification を残す。残せない場合は done にしない。
 
 ## Charter
 

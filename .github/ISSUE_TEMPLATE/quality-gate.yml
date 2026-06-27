@@ -11,6 +11,19 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: data-profile
+    attributes:
+      label: data_profile
+      description: 検査対象の Evidence Strictness
+      options:
+        - ES-0
+        - ES-1
+        - ES-2
+        - ES-3
+        - ES-4
+    validations:
+      required: true
+  - type: dropdown
     id: gate-type
     attributes:
       label: ゲート種別
@@ -18,6 +31,22 @@ body:
         - IQG（入力品質）
         - PQG（中間品質）
         - OQG（出力品質）
+        - MVP experiment gate
+        - Proposal / compliance gate
+        - Research quality gate
+        - Data / privacy gate
+    validations:
+      required: true
+  - type: textarea
+    id: required-evidence
+    attributes:
+      label: required_evidence
+      description: Data-Evidence / Work / Life の確認対象
+      value: |
+        Data-Evidence:
+        Work:
+        Life:
+        Missing:
     validations:
       required: true
   - type: textarea
@@ -36,10 +65,24 @@ body:
     attributes:
       label: 判定結果
       options:
+        - pending
         - 合格（gate-pass）
         - 不合格（gate-fail）
+        - waived（owner/reason/expiry/risk acceptance 必須）
     validations:
       required: true
+  - type: textarea
+    id: waiver
+    attributes:
+      label: waiver details
+      description: waived の場合のみ必須。ES-4 は原則不可
+      value: |
+        owner:
+        reason:
+        expiry:
+        risk_acceptance:
+    validations:
+      required: false
   - type: textarea
     id: rework-instructions
     attributes:
@@ -47,3 +90,16 @@ body:
       description: 不合格の場合の修正指示（不良コード + 具体的な修正内容）
     validations:
       required: false
+  - type: dropdown
+    id: next-circulation
+    attributes:
+      label: next_circulation
+      options:
+        - Data-Evidence
+        - Work
+        - Life
+        - Org
+        - Codex
+        - me
+    validations:
+      required: true

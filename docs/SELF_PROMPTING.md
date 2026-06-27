@@ -32,6 +32,8 @@ Observe
 - `kiwamust/org` open Issues: red/yellow、gate-fail、gate-pending、blocked
 - Work Vault の org project indexes: link 欠落、decision-log 欠落、quality-gates 欠落
 - repo docs: `docs/ARCHITECTURE.md`、`docs/WORK_INTEGRATION.md`
+- org operating baseline: `docs/ORG_OPERATING_BASELINE.md`
+- contract audit: `bash ops/audit-org-contract.sh --soft`
 - recent local changes: `git status --short`
 
 ### 2. Extract Signals
@@ -55,6 +57,8 @@ Title: DIR: ...
 GBT: generation | behavior | target
 Dept: rnd | brand | emergingtech | engineering | operations | cross
 Priority: p1 | p2 | p3
+Data_profile: ES-0 | ES-1 | ES-2 | ES-3 | ES-4 | unknown
+Next circulation: Data-Evidence | Work | Life | Org | Codex | me
 Evidence: #issue or file path
 Prompt: dispatch が処理できる directive 本文
 Approval gate: user approval required before mutation
@@ -67,7 +71,7 @@ Approval gate: user approval required before mutation
 | Gate | Check |
 | --- | --- |
 | IQG | 目的、DoD、材料、制約のうち観測できたものと unknown が分離されている |
-| PQG | Evidence が候補と対応している。Signal と routing に飛躍がない |
+| PQG | Evidence が候補と対応している。Signal と routing に飛躍がない。Authority Ladder と WIP limit に反していない |
 | OQG | ユーザーが yes/no で承認または却下できる粒度になっている |
 
 ### 5. Present Candidate For Approval

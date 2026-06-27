@@ -10,6 +10,20 @@ body:
       description: "元の Directive Issue 番号（例: #1）"
     validations:
       required: true
+  - type: input
+    id: parent-project
+    attributes:
+      label: parent_project
+      description: "Life parent Issue / project ref。ない場合は none と理由"
+    validations:
+      required: true
+  - type: input
+    id: work-ref
+    attributes:
+      label: work_ref
+      description: "Work Vault index / output ref。ない場合は none と理由"
+    validations:
+      required: true
   - type: dropdown
     id: gbt-class
     attributes:
@@ -44,6 +58,34 @@ body:
         - Scientific
     validations:
       required: true
+  - type: dropdown
+    id: data-profile
+    attributes:
+      label: data_profile
+      description: Evidence Strictness
+      options:
+        - ES-0
+        - ES-1
+        - ES-2
+        - ES-3
+        - ES-4
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: role
+      options:
+        - Strategist Agent
+        - Research Agent
+        - Drafting Agent
+        - QA Gate Agent
+        - Sales Agent
+        - Research Writing Agent
+        - Data Steward Agent
+        - Codex Executor
+    validations:
+      required: true
   - type: textarea
     id: charter
     attributes:
@@ -51,6 +93,44 @@ body:
       description: 目的、DoD、スコープ、体制、制約
     validations:
       required: true
+  - type: textarea
+    id: issue-contract
+    attributes:
+      label: Issue contract
+      description: phase / expected_return / gate / closeout_evidence / next_circulation
+      value: |
+        phase: intake
+        expected_return:
+        input_refs:
+          -
+        constraints:
+          -
+        gate:
+          type: UQG
+          status: pending
+          required_evidence:
+            -
+        closeout_evidence:
+          artifact_refs:
+            -
+          trace_refs:
+            -
+          verification_result:
+        next_circulation:
+    validations:
+      required: true
+  - type: textarea
+    id: wip-check
+    attributes:
+      label: WIP / stop check
+      description: Active parent <=3, active tasks <=7, ES-3/4 external artifacts <=2, trace plan
+      value: |
+        active_parent_project_count:
+        active_org_task_count:
+        active_es3_es4_external_artifact_count:
+        trace_or_verification_plan:
+    validations:
+      required: false
   - type: textarea
     id: task-breakdown
     attributes:

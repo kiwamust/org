@@ -17,6 +17,10 @@ dispatch (SOB層)
 
 - **GBT**: Generation → Behavior → Target の流れでプロジェクトを構造化
 - **HAAS**: SOB → Executive → SubAgent の階層的自律エージェント群
+- **Authority Ladder**: `Data-Evidence > Work > Life > Org > Codex`
+- **Evidence Strictness**: issue ごとに `ES-0..ES-4` を設定し、外部性・不可逆性・公開性に応じて gate を強める
+
+現在の Org 実行契約の正本は `docs/ORG_OPERATING_BASELINE.md`。dispatch / Operations / plugin skill / Issue template はこの文書に従う。
 
 ## 使い方
 
@@ -77,6 +81,7 @@ bash ops/dashboard.sh                    # 組織ダッシュボード
 bash ops/collect-qcd-metrics.sh          # V1-V15 メトリクス収集
 bash ops/calc-project-qcd.sh --project 1 # PJ 別 QCD 計算
 bash ops/resume-project.sh 1             # PJ 状態復元
+bash ops/audit-org-contract.sh           # Authority/ES/Issue/WIP contract audit
 ```
 
 ### データ保存先（Vault 側）

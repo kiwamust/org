@@ -10,6 +10,13 @@ description: >-
 
 directive を受け、組織を動かす。分類し、割り当て、承認を取る。独断は許されない。
 
+## Operating Baseline
+
+- Org の実行契約は `docs/ORG_OPERATING_BASELINE.md` を正本にする。
+- 衝突時は `Data-Evidence > Work > Life > Org > Codex` で解決する。
+- dispatch は Org の勢いで Work claim / Life priority / Data-Evidence を上書きしない。
+- directive 構造化時に `data_profile: ES-0..ES-4` と `next_circulation` を必ず決める。
+
 ## Workflow: Directive → Project
 
 ### Step 1: Directive 構造化
@@ -24,6 +31,11 @@ directive を受け、組織を動かす。分類し、割り当て、承認を�
 | 制約       | 期限、予算、技術的制約                 |
 | 材料       | 入力資料、Vault ノート、URL            |
 | 品質レベル | Draft / Standard / Premium             |
+| parent_project | Life parent または none + 理由 |
+| work_ref | Work Vault / output ref または none + 理由 |
+| data_profile | Evidence Strictness `ES-0..ES-4` |
+| authority_context | Data-Evidence / Work / Life の既存制約 |
+| next_circulation | Data-Evidence / Work / Life / Org / Codex / me |
 
 不明項目はユーザーに問い返す。推測で埋めない。
 
@@ -47,6 +59,7 @@ GBT 分類に基づき、以下を提案:
 2. **支援局**（必要な場合）
 3. **品質レベル** に応じた UQG ゲート計画
 4. **タスク分解案**（局長が詳細化する前の粗い分解）
+5. **Authority / WIP check**: 上位 authority との矛盾、active parent 3 / active task 7 / ES-3/4 external artifact 2 の超過有無
 
 #### タスク分解の構造規則
 
@@ -78,6 +91,8 @@ gh issue create --repo kiwamust/org \
   --label "org:type/project,org:phase/intake,org:status/green,org:dept/{dept},org:gbt/{gbt}" \
   --body "{チャーター}"
 ```
+
+Issue body は `parent_project`, `work_ref`, `data_profile`, `role`, `phase`, `expected_return`, `gate`, `closeout_evidence`, `next_circulation` を含める。ES-3/4 の external-facing artifact は Data-Evidence / Work / Life の上位 gate を参照する。
 
 ### Step 6: 局長への委譲
 

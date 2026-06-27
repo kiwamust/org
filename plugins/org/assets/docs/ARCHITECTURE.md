@@ -8,6 +8,34 @@
 4. **品質ゲート必須**: UQG フレームワークを全局適用
 5. **QAD本部の中央集約**: Operations は品質基準・不良コード・Gate・Hook/eval を一元管理
 6. **GBT マッピング**: Generation → Behavior → Target の流れで全プロジェクトを構造化
+7. **Authority Ladder**: `Data-Evidence > Work > Life > Org > Codex` を越権しない
+8. **Evidence Strictness**: `ES-0..ES-4` を issue ごとに設定し、外部性・不可逆性に応じて gate を強める
+
+現在の実行契約の正本は `ORG_OPERATING_BASELINE.md`。本ファイルは構造説明であり、衝突時は baseline を優先する。
+
+## Authority Ladder
+
+```text
+Data-Evidence > Work > Life > Org > Codex
+```
+
+| Subsystem | 正本にするもの | Org の制約 |
+| --- | --- | --- |
+| Data-Evidence | observed fact, metric, citation, lineage, confidence, access class | evidence conflict があれば `blocked:evidence_conflict` とし、gate pass にしない |
+| Work | ontology, claim, source inventory, artifact meaning | unsupported claim を proposal-ready / publish-ready にしない |
+| Life | portfolio priority, continue/stop/defer/integrate, final DoD | Life stop/defer を Org WIP で上書きしない |
+| Org | execution plan, role, phase, UQG, WIP, handoff | 上位 gate の範囲内だけで実行を決める |
+| Codex | observation, draft, patch, verification proposal | trace / issue / artifact に保存されるまで長期状態にしない |
+
+## Evidence Strictness
+
+| ES | 用途 | Org gate |
+| --- | --- | --- |
+| ES-0 | private scratch / ideation | lightweight self-check |
+| ES-1 | reversible internal decision | internal QA |
+| ES-2 | business experiment / lightweight external test | experiment gate + Work check |
+| ES-3 | client-facing / public / strategic artifact | QA + Work + Data-Evidence check |
+| ES-4 | procurement / legal / research result / financial commitment | Data-Evidence + Work + Life approval + second review |
 
 ## HAAS 階層マッピング
 
@@ -57,6 +85,8 @@ Org self-prompt candidate or User directive
 [dispatch] 完了報告 → ✅ ユーザー最終承認
 ```
 
+Operational issue は次を持つ: `parent_project` or `work_ref`, `data_profile`, `role`, `phase`, `expected_return`, `gate`, `closeout_evidence`, `next_circulation`。
+
 ## Self-Prompting 入口
 
 従来の入口は `User directive` のみだった。`org` はこれを拡張し、`Observe -> Extract Signals -> Generate Directive Candidates -> UQG Self-Check -> User Approval` の self-prompt 入口を持つ。
@@ -90,6 +120,17 @@ KPLS の IQC/IPQC/FQC を一般化:
 | Standard | IQG+PQG+OQG           | 標準プロジェクト     |
 | Premium  | 全ゲート+複数レビュー | 外部公開・重要成果物 |
 
+品質レベルは工程の厚み、Evidence Strictness は claim/evidence の許容不確実性を表す。外部向け artifact は品質レベルだけで通さず、ES-3/4 の上位 gate を確認する。
+
+### Gate Status
+
+| Status | 意味 | 条件 |
+| --- | --- | --- |
+| pending | 未検証 | next action が明確 |
+| pass | 次へ進める | Data / Work / Life と矛盾しない |
+| fail | 次へ進めない | remediation task または stop reason がある |
+| waived | 条件付きで進める | owner / reason / expiry / risk acceptance がある。ES-4 は例外扱い |
+
 ### 不良コード体系
 
 - D01-D34: KPLS 既存（知的生産全般）
@@ -119,6 +160,15 @@ org:priority/{p1,p2,p3}
 org:quality/{gate-pending,gate-pass,gate-fail}
 org:gbt/{generation,behavior,target}
 ```
+
+## WIP Safety Limits
+
+| WIP type | 既定 limit | 超過時 |
+| --- | ---: | --- |
+| Active parent project | 3 | Life review なしに追加不可 |
+| Active Org tasks / pilot | 7 | new task intake を止め、close / merge 優先 |
+| ES-3/4 external-facing artifacts | 2 | reviewer / evidence 確保まで追加不可 |
+| Codex substantial runs without trace | 0 after grace | trace missing を improvement candidate 化 |
 
 ## 外部連携
 

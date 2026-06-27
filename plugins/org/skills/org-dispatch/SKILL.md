@@ -17,6 +17,9 @@ directive を受け、組織を動かす。分類し、割り当て、承認を�
 - Work Vault / personal ontology と接続する directive では `org-work` を併用し、Issue と Vault の双方向リンクを作る。
 - Claude の Agent ツール前提の箇所は、Codex では利用可能な multi-agent tool がある場合のみ委譲し、なければ該当ロール定義を読み込んで同一セッション内で実行する。
 - 既存 Claude 用 `.claude/skills` は原本として保持し、この plugin 内の `skills/` を Codex 用の実行面とする。
+- Org の実行契約は `../../assets/docs/ORG_OPERATING_BASELINE.md` を正本にする。
+- 衝突時は `Data-Evidence > Work > Life > Org > Codex` で解決し、Work claim / Life priority / Data-Evidence を Org が上書きしない。
+- directive 構造化時に `data_profile: ES-0..ES-4` と `next_circulation` を必ず決める。
 
 ## Workflow: Directive → Project
 
@@ -32,6 +35,11 @@ directive を受け、組織を動かす。分類し、割り当て、承認を�
 | 制約       | 期限、予算、技術的制約                 |
 | 材料       | 入力資料、Vault ノート、URL            |
 | 品質レベル | Draft / Standard / Premium             |
+| parent_project | Life parent または none + 理由 |
+| work_ref | Work Vault / output ref または none + 理由 |
+| data_profile | Evidence Strictness `ES-0..ES-4` |
+| authority_context | Data-Evidence / Work / Life の既存制約 |
+| next_circulation | Data-Evidence / Work / Life / Org / Codex / me |
 
 不明項目はユーザーに問い返す。推測で埋めない。
 
@@ -55,6 +63,7 @@ GBT 分類に基づき、以下を提案:
 2. **支援局**（必要な場合）
 3. **品質レベル** に応じた UQG ゲート計画
 4. **タスク分解案**（局長が詳細化する前の粗い分解）
+5. **Authority / WIP check**: 上位 authority との矛盾、active parent 3 / active task 7 / ES-3/4 external artifact 2 の超過有無
 
 #### タスク分解の構造規則
 
@@ -86,6 +95,8 @@ gh issue create --repo kiwamust/org \
   --label "org:type/project,org:phase/intake,org:status/green,org:dept/{dept},org:gbt/{gbt}" \
   --body "{チャーター}"
 ```
+
+Issue body は `parent_project`, `work_ref`, `data_profile`, `role`, `phase`, `expected_return`, `gate`, `closeout_evidence`, `next_circulation` を含める。ES-3/4 の external-facing artifact は Data-Evidence / Work / Life の上位 gate を参照する。
 
 ### Step 6: 局長への委譲
 

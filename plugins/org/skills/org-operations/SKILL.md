@@ -17,14 +17,22 @@ Operations局は `org` の QAD本部として、品質基準・品質ゲート�
 - Operations局のロール定義は `../../assets/agents/operations/*.md` を必要時に読む。
 - QAD本部 charter は `../../assets/docs/OPERATIONS_QAD_CHARTER.md` を必要時に読む。
 - org 全体設計は `../../assets/docs/ARCHITECTURE.md` を参照する。
+- Org の実行契約は `../../assets/docs/ORG_OPERATING_BASELINE.md` を正本にする。
 - Work Vault / personal ontology と接続する品質ゲートでは `org-work` の IQG/PQG/OQG 追加チェックを適用する。
 
 ## QAD本部の位置づけ
 
 - 使命: 頻出する品質欠陥を不良コード化し、`dispatch / 各局SKILL / Gate / Hook / eval` に還流する
-- 権限: 品質基準策定権、差し戻し権、証拠要求権、改善要求権
+- 権限: 品質基準策定権、差し戻し権、証拠要求権、改善要求権、Authority Gate停止権
 - 非守備範囲: 各局成果物の代筆、局長に代わる意思決定
 - 参照: `docs/OPERATIONS_QAD_CHARTER.md`
+
+## Authority / Evidence Rule
+
+- `Data-Evidence > Work > Life > Org > Codex` の順序を越えた gate pass は禁止。
+- Gate は `data_profile: ES-0..ES-4` に応じて reviewer / evidence / approval を強める。
+- `pass` は上位 gate と矛盾しない場合だけ使う。
+- `waived` は owner / reason / expiry / risk acceptance を必須にし、ES-4 では例外扱い。
 
 ## エージェント構成
 
@@ -100,6 +108,7 @@ Operations局は `org` の QAD本部として、品質基準・品質ゲート�
 
 合格: Issue ラベルを `org:quality/gate-pass` に遷移
 不合格: `org:quality/gate-fail` + 差し戻し指示を Issue comment に記録
+waived: owner / reason / expiry / risk acceptance を Issue comment に記録し、ES-4 では原則使わない
 
 ### 品質レベル別ゲート適用
 
@@ -108,6 +117,16 @@ Operations局は `org` の QAD本部として、品質基準・品質ゲート�
 | Draft    |  -  |  -  |  ✓  | 最終確認のみ         |
 | Standard |  ✓  |  ✓  |  ✓  | 3ゲート全適用        |
 | Premium  |  ✓  | ✓✓  |  ✓  | PQG 2回+外部レビュー |
+
+### Evidence Strictness 別ゲート適用
+
+| ES | Gate | 必須確認 |
+| --- | --- | --- |
+| ES-0 | lightweight | hypothesis / scratch と明記 |
+| ES-1 | internal QA | uncertainty と可逆性 |
+| ES-2 | experiment gate | signal capture と Work claim status |
+| ES-3 | external-facing gate | Data-Evidence / Work check と approval request |
+| ES-4 | high-stakes gate | official source / reproducibility / compliance / Life approval / second review |
 
 ## Workflow B: 不良コード運用と再発防止
 
@@ -142,6 +161,8 @@ QAD本部はレビュー指摘を感想で終わらせず、不良コードと�
 - ゲート判定条件が自己完結していない
 - Handoff先で再解釈が必要になる
 - 既知の不良コードが再発している
+- Data-Evidence / Work / Life の上位 gate と矛盾している
+- ES-3/4 external-facing artifact に必要な reviewer / evidence / approval がない
 
 ## Workflow C: RAG ステータス集約
 

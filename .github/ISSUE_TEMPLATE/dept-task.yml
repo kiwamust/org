@@ -10,6 +10,20 @@ body:
       description: "親の PJ Issue 番号（例: #2）"
     validations:
       required: true
+  - type: input
+    id: parent-project
+    attributes:
+      label: parent_project
+      description: "Life parent Issue / project ref。プロジェクト Issue と同じなら同じ値"
+    validations:
+      required: true
+  - type: input
+    id: work-ref
+    attributes:
+      label: work_ref
+      description: "Work Vault index / output ref。ない場合は none と理由"
+    validations:
+      required: true
   - type: dropdown
     id: dept
     attributes:
@@ -20,6 +34,34 @@ body:
         - EmergingTech局
         - Engineering局
         - Operations局
+    validations:
+      required: true
+  - type: dropdown
+    id: data-profile
+    attributes:
+      label: data_profile
+      description: Evidence Strictness
+      options:
+        - ES-0
+        - ES-1
+        - ES-2
+        - ES-3
+        - ES-4
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: role
+      options:
+        - Strategist Agent
+        - Research Agent
+        - Drafting Agent
+        - QA Gate Agent
+        - Sales Agent
+        - Research Writing Agent
+        - Data Steward Agent
+        - Codex Executor
     validations:
       required: true
   - type: input
@@ -36,6 +78,25 @@ body:
       description: 何を、どのレベルで実行するか
     validations:
       required: true
+  - type: input
+    id: expected-return
+    attributes:
+      label: expected_return
+      description: この task が返すべき成果・判断・signal
+    validations:
+      required: true
+  - type: textarea
+    id: input-refs
+    attributes:
+      label: input_refs / constraints
+      description: 入力 refs と制約を分けて記録
+      value: |
+        input_refs:
+          -
+        constraints:
+          -
+    validations:
+      required: true
   - type: textarea
     id: acceptance-criteria
     attributes:
@@ -50,3 +111,41 @@ body:
       description: 生成するファイルパスまたは Issue comment の形式
     validations:
       required: false
+  - type: textarea
+    id: gate
+    attributes:
+      label: gate
+      description: gate type/status/required_evidence
+      value: |
+        type: UQG
+        status: pending
+        required_evidence:
+          -
+    validations:
+      required: true
+  - type: textarea
+    id: closeout-evidence
+    attributes:
+      label: closeout_evidence
+      description: 完了時に artifact / trace / verification を埋める
+      value: |
+        artifact_refs:
+          -
+        trace_refs:
+          -
+        verification_result:
+    validations:
+      required: true
+  - type: dropdown
+    id: next-circulation
+    attributes:
+      label: next_circulation
+      options:
+        - Data-Evidence
+        - Work
+        - Life
+        - Org
+        - Codex
+        - me
+    validations:
+      required: true

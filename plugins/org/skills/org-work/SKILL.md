@@ -11,6 +11,13 @@ description: >-
 
 org はプロジェクト実行系。Work は個人知識基盤と成果物保管庫。両者を混ぜない。状態は Issue、知識は Vault、判断は明示的なリンクで接続する。
 
+## Authority / Evidence
+
+- 衝突時は `Data-Evidence > Work > Life > Org > Codex` で解決する。
+- Work は ontology / claim / source inventory / artifact meaning の正本。
+- Org は Work が `unsupported` とした claim を `proposal-ready` / `publish-ready` / `done` にしない。
+- Work-linked org issue には `data_profile: ES-0..ES-4`, gate, closeout evidence, next circulation を入れる。
+
 ## Canonical Paths
 
 - Work Vault: `/Users/kiwamusato/Work/work`
@@ -29,6 +36,7 @@ org はプロジェクト実行系。Work は個人知識基盤と成果物保�
 | Knowledge/assets | Work Vault | source notes, research memos, artwork concepts, drafts, reusable assets |
 | Operating ontology | Work `_ontology` | Activity / Asset / Output / Audience / Signal / Decision mapping |
 | Executable workflow | org plugin skills | dispatch, R&D, Brand, Engineering, Operations, Work connection rules |
+| Tool execution | Codex | observation, draft, patch, verification proposal; not long-term state |
 
 ## Issue Granularity
 
@@ -54,6 +62,9 @@ Every org project that uses Work should have both:
    - `Source notes`: key input notes
    - `Output directory`: destination folder
    - `Ontology mapping`: Activity / Asset / Output / Audience / Signal / Decision
+   - `Evidence Strictness`: ES-0..ES-4
+   - `Org contract`: role, phase, expected return, gate, next circulation
+   - `Closeout evidence`: artifact refs, trace refs, verification result
 2. Vault project index:
    - `Life parent Issue`, when applicable
    - `GitHub Issue`: URL or issue number
@@ -139,6 +150,16 @@ Operations checks for Work-linked projects:
 | IQG | Source notes are listed; ontology mapping is complete; output directory is defined |
 | PQG | Claims cite source notes; decisions are mirrored between Issue and Vault |
 | OQG | Output has audience; reusable assets are identified; final artifact is stored under Work |
+
+## Evidence Strictness Additions
+
+| ES | Work requirement |
+| --- | --- |
+| ES-0 | hypothesis / scratch status is explicit |
+| ES-1 | uncertainty is recorded beside the claim |
+| ES-2 | source pack and falsifier or signal plan exist |
+| ES-3 | claim ledger, citations, and review notes exist |
+| ES-4 | official source or reproducibility/compliance pack exists; Life approval is linked |
 
 ## Constraints
 

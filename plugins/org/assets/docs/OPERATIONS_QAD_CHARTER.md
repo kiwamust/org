@@ -34,6 +34,9 @@ QAD本部は事後的なダメ出し機関ではない。各局の成果物が�
 4. `改善要求権`
    頻出不良に対して、SKILL、テンプレート、Hook、ゲート基準の改訂を要求できる。
 
+5. `Authority Gate停止権`
+   Data-Evidence / Work / Life の上位判断と矛盾する成果物を gate pass にしない。
+
 ## 非守備範囲
 
 - 各局成果物の代筆
@@ -60,6 +63,20 @@ QAD本部は事後的なダメ出し機関ではない。各局の成果物が�
 - `Prevention Over Inspection`: 事後検査より生成時の制約注入を優先する
 - `No Ambiguous Pass`: 基準未達を曖昧に通さない
 - `Regression Is Failure`: 一度封じた不良の再発を制度不備として扱う
+- `Authority-Aware`: Data-Evidence > Work > Life > Org > Codex の順序を越えた gate pass を禁止する
+- `Strictness-Aware`: ES-0..ES-4 に応じて要求 evidence と reviewer を変える
+
+## Evidence Strictness 対応
+
+| ES | QAD gate | 必須確認 |
+| --- | --- | --- |
+| ES-0 | lightweight | hypothesis / scratch と明記されている |
+| ES-1 | internal QA | uncertainty と可逆性が記録されている |
+| ES-2 | experiment gate | signal capture と Work claim status がある |
+| ES-3 | external-facing gate | Data-Evidence / Work check と approval request がある |
+| ES-4 | high-stakes gate | official source / reproducibility / compliance / Life approval / second review がある |
+
+Gate status は `pending|pass|fail|waived`。`waived` は owner / reason / expiry / risk acceptance を必須にし、ES-4 では例外として扱う。
 
 ## Hub-and-Spoke 構造
 
@@ -123,3 +140,5 @@ QAD liaison は各局の局長または担当leadが兼務する。独立した�
 - ゲート判定条件が自己完結していない
 - Handoff先で再解釈が必要になる
 - 既知の不良コードが再発している
+- Data-Evidence / Work / Life の上位 gate と矛盾している
+- ES-3/4 external-facing artifact に必要な reviewer / evidence / approval がない

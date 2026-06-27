@@ -4,10 +4,12 @@ org と Work Obsidian Vault / personal ontology の接続契約。
 
 ## Principle
 
+- Authority conflict は `Data-Evidence > Work > Life > Org > Codex` で解決する。
 - GitHub Issues: 状態、承認、進捗、品質ゲートの正。
-- Work Vault: 知識、素材、成果物、personal ontology の正。
+- Work Vault: 知識、素材、成果物、personal ontology、claim state の正。
 - org plugin skills: 実行手順の正。
 - Life Issues: portfolio / parent project の正。
+- Codex: 観測、draft、patch、verification proposal。長期状態の正ではない。
 
 混ぜない。必ずリンクする。
 
@@ -56,6 +58,9 @@ Issue body must include:
 - Source notes
 - Output directory
 - Ontology mapping: Activity / Asset / Output / Audience / Signal / Decision
+- Evidence Strictness: `ES-0..ES-4`
+- Org role / phase / gate / next circulation
+- Closeout evidence: artifact refs, trace refs, verification result
 
 Vault project index must include:
 
@@ -94,6 +99,18 @@ Recommended files:
 | IQG | Source notes listed; ontology mapping complete; output directory defined |
 | PQG | Claims cite source notes; decisions mirrored between Issue and Vault |
 | OQG | Output has audience; reusable assets identified; final artifact stored under Work |
+
+## Evidence Strictness Additions
+
+| ES | Work requirement |
+| --- | --- |
+| ES-0 | hypothesis / scratch status is explicit |
+| ES-1 | uncertainty is recorded beside the claim |
+| ES-2 | source pack and falsifier or signal plan exist |
+| ES-3 | claim ledger, citations, and review notes exist |
+| ES-4 | official source or reproducibility/compliance pack exists; Life approval is linked |
+
+Org must not mark an artifact `proposal-ready`, `publish-ready`, or `done` if Work still marks the underlying claim unsupported.
 
 ## Known QCD Label Mismatch
 

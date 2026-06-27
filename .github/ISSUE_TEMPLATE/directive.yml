@@ -32,6 +32,31 @@ body:
         - Scientific（全ゲート+追加項目+fact-check必須）
     validations:
       required: true
+  - type: dropdown
+    id: evidence-strictness
+    attributes:
+      label: Evidence Strictness
+      description: 外部性・不可逆性・公開性・調達/法務/研究リスクに応じた証拠水準
+      options:
+        - ES-0（private scratch / ideation）
+        - ES-1（可逆な内部判断）
+        - ES-2（事業実験・軽量 external test）
+        - ES-3（client-facing / public / strategic artifact）
+        - ES-4（調達・法務・研究結果・財務 commitment）
+    validations:
+      required: true
+  - type: textarea
+    id: authority-context
+    attributes:
+      label: Authority context
+      description: Data-Evidence / Work / Life で既に決まっている制約、または unknown
+      value: |
+        Data-Evidence:
+        Work:
+        Life:
+        Unknown:
+    validations:
+      required: false
   - type: textarea
     id: constraints
     attributes:
