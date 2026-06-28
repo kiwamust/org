@@ -11,7 +11,7 @@
 7. **Authority Ladder**: `Data-Evidence > Work > Life > Org > Codex` を越権しない
 8. **Evidence Strictness**: `ES-0..ES-4` を issue ごとに設定し、外部性・不可逆性に応じて gate を強める
 
-現在の実行契約の正本は `ORG_OPERATING_BASELINE.md`。本ファイルは構造説明であり、衝突時は baseline を優先する。
+現在の実行契約の正本は `docs/ORG_OPERATING_BASELINE.md`。本ファイルは構造説明であり、衝突時は baseline を優先する。
 
 ## Authority Ladder
 
@@ -114,11 +114,12 @@ KPLS の IQC/IPQC/FQC を一般化:
 
 ### 品質レベル
 
-| レベル   | ゲート                | 用途                 |
-| -------- | --------------------- | -------------------- |
-| Draft    | OQG のみ              | 簡易タスク、内部メモ |
-| Standard | IQG+PQG+OQG           | 標準プロジェクト     |
-| Premium  | 全ゲート+複数レビュー | 外部公開・重要成果物 |
+| レベル     | ゲート                           | 用途                         |
+| ---------- | -------------------------------- | ---------------------------- |
+| Draft      | OQG のみ                         | 簡易タスク、内部メモ         |
+| Standard   | IQG+PQG+OQG                      | 標準プロジェクト             |
+| Premium    | 全ゲート+複数レビュー            | 外部公開・重要成果物         |
+| Scientific | 全ゲート+追加項目+fact-check必須 | 学術研究・定式化プロジェクト |
 
 品質レベルは工程の厚み、Evidence Strictness は claim/evidence の許容不確実性を表す。外部向け artifact は品質レベルだけで通さず、ES-3/4 の上位 gate を確認する。
 
@@ -161,6 +162,34 @@ org:quality/{gate-pending,gate-pass,gate-fail}
 org:gbt/{generation,behavior,target}
 ```
 
+## TCC（タスク完了チェック）
+
+タスク → `phase:done` 遷移時の軽量品質チェック。UQG とは独立したタスクレベルの完了確認。
+
+|  No | チェック項目 | 判定基準                                  |
+| --: | ------------ | ----------------------------------------- |
+|   1 | AC 充足      | 完了条件を全て満たしているか              |
+|   2 | 成果物参照   | 成果物が Issue comment に参照されているか |
+|   3 | スコープ逸脱 | スコープ外の追加作業がないか              |
+
+適用: Standard 以上で自動。Draft はオプション。
+
+## Fact-check フロー
+
+| 品質レベル | fact-check | トリガー                            |
+| ---------- | :--------: | ----------------------------------- |
+| Draft      |     -      | N/A                                 |
+| Standard   |   条件付   | PQG で R-type 不良（R01-R10）検出時 |
+| Premium    |     ✓      | PQG 完了後に自動                    |
+| Scientific |     ✓      | PQG 完了後に自動（必須）            |
+
+フロー: PQG → (条件判定) → fact-check → OQG
+
+## タスクライフサイクル
+
+タスク close 条件: TCC 合格（Draft 免除） + 親 PJ close。
+PJ close 時: dispatch が全子タスクを一括 close。
+
 ## WIP Safety Limits
 
 | WIP type | 既定 limit | 超過時 |
@@ -169,6 +198,49 @@ org:gbt/{generation,behavior,target}
 | Active Org tasks / pilot | 7 | new task intake を止め、close / merge 優先 |
 | ES-3/4 external-facing artifacts | 2 | reviewer / evidence 確保まで追加不可 |
 | Codex substantial runs without trace | 0 after grace | trace missing を improvement candidate 化 |
+
+## QCD Operating Loop
+
+Org は QCD を「後で見る指標」ではなく、Issue 運用を切り替える制御信号として使う。
+
+```text
+Issue QCD contract
+  -> collect-qcd-metrics
+  -> qcd-operating-review
+  -> freeze intake / move gate earlier / split or stop / escalate
+  -> Issue closeout qcd_actual
+```
+
+プロジェクトと Standard 以上のタスクは `qcd:` 契約を持つ。Quality は gate と defect budget、Cost は WIP / reviewer / Codex run budget、Delivery は next checkpoint / target close / batch size で表す。契約がない Issue は受け入れ可能だが、Operations は次の planning touch で契約補完を要求する。
+
+## Safety Hooks
+
+PreToolUse hook (`ops/hooks/pre-gh-check.sh`) で gh コマンドの安全性を検証:
+
+- `--repo kiwamust/org` 強制（cross-repo 防止）
+- `gh issue delete` ブロック
+- `gh issue close` ワーニング（非ブロック）
+
+## Ops スクリプト
+
+| スクリプト               | 目的                              |
+| ------------------------ | --------------------------------- |
+| `dashboard.sh`           | 組織ダッシュボード（stale + QCD） |
+| `collect-qcd-metrics.sh` | V1-V15 メトリクス自動収集         |
+| `qcd-operating-review.sh` | QCD メトリクスを運用判断へ変換    |
+| `calc-project-qcd.sh`    | PJ 別 QCD 計算（D, C, ε, Π）      |
+| `resume-project.sh`      | PJ 状態復元（コンテキスト回復）   |
+| `audit-org-contract.sh`  | Authority/ES/Issue/WIP 契約監査   |
+
+### データディレクトリ構造（Vault 側）
+
+```
+~/Desktop/work/work/org/data/
+├── metrics/YYYY-MM-DD.json
+├── qcd/project-qcd.csv
+├── entropy/entropy-timeseries.csv
+└── experiments/<experiment-id>.json
+```
 
 ## 外部連携
 

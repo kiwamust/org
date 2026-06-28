@@ -110,6 +110,13 @@ append_missing() {
   MISSING_COUNT=$((MISSING_COUNT + 1))
 }
 
+append_qcd_warning() {
+  local issue_ref="$1"
+  local missing="$2"
+  QCD_WARNING_REPORT+="- ${issue_ref}: ${missing}"$'\n'
+  QCD_WARNING_COUNT=$((QCD_WARNING_COUNT + 1))
+}
+
 issues_json="$(read_issues)" || {
   echo "Unable to observe org issues from $REPO." >&2
   exit 1
@@ -122,6 +129,8 @@ ACTIVE_TASKS=0
 ACTIVE_EXTERNAL=0
 MISSING_COUNT=0
 MISSING_REPORT=""
+QCD_WARNING_COUNT=0
+QCD_WARNING_REPORT=""
 
 while IFS= read -r issue; do
   number="$(jq -r '.number // "?"' <<<"$issue")"
@@ -159,6 +168,17 @@ while IFS= read -r issue; do
 
     if [[ "${#missing_fields[@]}" -gt 0 ]]; then
       append_missing "$issue_ref" "$(IFS=,; echo "${missing_fields[*]}")"
+    fi
+
+    qcd_missing=()
+    field_present "$body" "qcd:" "qcd contract" || qcd_missing+=("qcd")
+    field_present "$body" "quality_target" "quality target" || qcd_missing+=("quality_target")
+    field_present "$body" "delivery_target" "delivery target" "next_checkpoint" || qcd_missing+=("delivery_target")
+    field_present "$body" "cost_budget" "cost budget" "wip_slots" || qcd_missing+=("cost_budget")
+    field_present "$body" "stop_rules" "stop rule" || qcd_missing+=("stop_rules")
+
+    if [[ "${#qcd_missing[@]}" -gt 0 ]]; then
+      append_qcd_warning "$issue_ref" "$(IFS=,; echo "${qcd_missing[*]}")"
     fi
   fi
 
@@ -203,6 +223,16 @@ else
   echo "Missing critical fields: $MISSING_COUNT"
   printf '%s' "$MISSING_REPORT"
   FAILURES=$((FAILURES + MISSING_COUNT))
+fi
+echo ""
+
+echo "## QCD readiness"
+if [[ "$QCD_WARNING_COUNT" -eq 0 ]]; then
+  echo "Missing QCD contract fields: 0"
+else
+  echo "Missing QCD contract fields: $QCD_WARNING_COUNT"
+  printf '%s' "$QCD_WARNING_REPORT"
+  echo "Note: QCD readiness warnings do not fail this audit yet; fill them at the next planning touch."
 fi
 echo ""
 

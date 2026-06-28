@@ -36,6 +36,7 @@ directive を受け、組織を動かす。分類し、割り当て、承認を�
 | data_profile | Evidence Strictness `ES-0..ES-4` |
 | authority_context | Data-Evidence / Work / Life の既存制約 |
 | next_circulation | Data-Evidence / Work / Life / Org / Codex / me |
+| qcd | quality_target / delivery_target / cost_budget / leading_indicators / stop_rules |
 
 不明項目はユーザーに問い返す。推測で埋めない。
 
@@ -60,6 +61,7 @@ GBT 分類に基づき、以下を提案:
 3. **品質レベル** に応じた UQG ゲート計画
 4. **タスク分解案**（局長が詳細化する前の粗い分解）
 5. **Authority / WIP check**: 上位 authority との矛盾、active parent 3 / active task 7 / ES-3/4 external artifact 2 の超過有無
+6. **QCD contract**: Quality bar, next checkpoint, WIP/review/Codex budget, stop rules. 未定義なら起票前に `unknown + 補完タイミング` を明記する
 
 #### タスク分解の構造規則
 
@@ -93,6 +95,7 @@ gh issue create --repo kiwamust/org \
 ```
 
 Issue body は `parent_project`, `work_ref`, `data_profile`, `role`, `phase`, `expected_return`, `gate`, `closeout_evidence`, `next_circulation` を含める。ES-3/4 の external-facing artifact は Data-Evidence / Work / Life の上位 gate を参照する。
+Standard 以上の PJ / task は `qcd:` 契約を含める。Quality は gate/pass 条件、Delivery は next checkpoint / target close、Cost は WIP slot / review budget / Codex run budget で表す。
 
 ### Step 6: 局長への委譲
 

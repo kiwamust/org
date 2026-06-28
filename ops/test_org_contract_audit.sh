@@ -48,6 +48,7 @@ good_output="$("$ROOT/ops/audit-org-contract.sh" --from-file "$TMPDIR/good.json"
 assert_contains "$good_output" "Result: pass"
 assert_contains "$good_output" "Missing critical fields: 0"
 assert_contains "$good_output" "Active Org tasks"
+assert_contains "$good_output" "QCD readiness"
 
 cat >"$TMPDIR/missing.json" <<'JSON'
 [

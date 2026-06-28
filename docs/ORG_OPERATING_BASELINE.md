@@ -141,6 +141,63 @@ WIP limits are sovereignty and quality controls, not productivity targets.
 | ES-3/4 external-facing artifacts | 2 | Add reviewer/evidence before intake |
 | Codex substantial runs without trace | 0 after grace | Convert missing trace into improvement candidate |
 
+## QCD Operating Model
+
+Org optimizes project/task QCD by reducing rework, limiting WIP, and cutting ambiguous scope before execution expands. QCD is not a retrospective score only; it is an operating contract that decides whether intake continues, gates move earlier, work is split, or work stops.
+
+### QCD Contract
+
+Every project and Standard-or-higher task should carry this contract in the Issue body:
+
+```yaml
+qcd:
+  quality_target:
+    gate_type: "IQG|PQG|OQG|project-specific"
+    pass_condition: ""
+    defect_budget: "0 critical; <=N minor"
+  delivery_target:
+    next_checkpoint: "YYYY-MM-DD or explicit event"
+    target_close: "YYYY-MM-DD or none + reason"
+    batch_size: "single artifact|one gate|one decision"
+  cost_budget:
+    wip_slots: 1
+    review_budget: "self|one reviewer|two reviewers"
+    codex_run_budget: "bounded by artifact + verification"
+  leading_indicators:
+    - ""
+  stop_rules:
+    - ""
+```
+
+`quality_target` defines the evidence bar. `delivery_target` defines the next observable checkpoint, not a vague desired date. `cost_budget` is mainly attention cost: WIP slots, review load, and Codex run count. If an Issue lacks a QCD contract, dispatch can still accept it, but Operations treats it as lower operational readiness until the next planning touch.
+
+### QCD Decision Rules
+
+| Signal | Threshold | Org action |
+| --- | --- | --- |
+| WIP exceeds limit | active tasks > 7 or active parents > 3 | Freeze new intake; close, merge, or defer first |
+| Gate pass rate falls | less than 80% over recent gates | Move the relevant gate earlier and create an improvement candidate |
+| Rework rate rises | greater than 20% | Tighten IQG/PQG; split broad tasks into smaller batches |
+| Any blocked issue | blocked count > 0 | Escalate to Data-Evidence / Work / Life / user based on blocker authority |
+| Stale execution | execute issue not updated for 7 days | Split, stop, or force a next checkpoint comment |
+| Cycle time stretches | average closed task cycle time > target | Cut scope or split the work package |
+| ES-3/4 external WIP exceeds limit | more than 2 artifacts | Stop external artifact intake until reviewer/evidence capacity exists |
+| Closeout lacks trace or verification | any substantial Codex run | Create an improvement candidate; do not mark operationally done |
+
+### QCD Closeout
+
+Closeout evidence should report actual QCD against the contract:
+
+```yaml
+qcd_actual:
+  quality_result: "pass|fail|waived + evidence"
+  delivery_result: "closed on target|late|split|stopped"
+  cost_result: "within budget|over WIP|extra review|extra run"
+  learning:
+    defect_codes: []
+    rule_update_needed: true|false
+```
+
 ## Role Contract
 
 | Role | Purpose | Input | Output | Prohibited |
@@ -214,6 +271,8 @@ Flow Metrics Review tracks throughput, cycle time, rework rate, blocked count, s
 - blocked count grows: escalate to Data/Work/Life
 - stale issue older than 7 days: review
 - scope creep greater than 15%: Life review
+
+Operations runs `ops/qcd-operating-review.sh` after `ops/collect-qcd-metrics.sh` when deciding whether intake can continue.
 
 ## Stop Conditions
 

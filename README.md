@@ -74,11 +74,22 @@ Operations局は `org` の QAD本部として、UQGの運営だけでなく、�
 
 品質フロー内の事実検証。Scientific/Premium は PQG 後に必須。Standard は R-type 不良検出時のみ。
 
+## QCD Operating Loop
+
+QCD は `測る -> 判断する -> Issue を動かす` までを1サイクルにする。
+
+- Quality: gate pass rate / first-pass yield / defect density / rework
+- Cost: WIP / blocked / reviewer load / Codex run budget
+- Delivery: throughput / cycle time / stale issue / checkpoint adherence
+
+`ops/qcd-operating-review.sh` は metrics JSON から `freeze_intake`, `move_gate_earlier`, `split_or_stop`, `escalate_blocker`, `continue` を出す。
+
 ## Ops スクリプト
 
 ```bash
 bash ops/dashboard.sh                    # 組織ダッシュボード
 bash ops/collect-qcd-metrics.sh          # V1-V15 メトリクス収集
+bash ops/qcd-operating-review.sh         # QCD から運用判断を出す
 bash ops/calc-project-qcd.sh --project 1 # PJ 別 QCD 計算
 bash ops/resume-project.sh 1             # PJ 状態復元
 bash ops/audit-org-contract.sh           # Authority/ES/Issue/WIP contract audit

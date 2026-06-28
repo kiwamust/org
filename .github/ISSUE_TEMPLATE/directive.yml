@@ -65,6 +65,18 @@ body:
     validations:
       required: false
   - type: textarea
+    id: qcd-target
+    attributes:
+      label: QCD target
+      description: Quality / Cost / Delivery の期待値。未定なら unknown と理由
+      value: |
+        quality:
+        cost:
+        delivery:
+        stop_rule:
+    validations:
+      required: false
+  - type: textarea
     id: materials
     attributes:
       label: 材料

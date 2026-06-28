@@ -72,6 +72,18 @@ body:
     validations:
       required: true
   - type: textarea
+    id: qcd-impact
+    attributes:
+      label: QCD impact
+      description: Gate result が QCD 運用に与える影響
+      value: |
+        quality_result:
+        delivery_result:
+        cost_result:
+        next_operation: continue|freeze_intake|move_gate_earlier|split_or_stop|escalate_blocker
+    validations:
+      required: true
+  - type: textarea
     id: waiver
     attributes:
       label: waiver details

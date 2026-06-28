@@ -22,6 +22,7 @@ QAD本部は事後的なダメ出し機関ではない。各局の成果物が�
 - レビュー指摘の収集、分類、再発防止策への変換
 - 各局QAD liaison の運用設計と支援
 - 品質メトリクスの観測と改善提案
+- QCD operating review による intake freeze / gate 前倒し / task split / stop 判断
 
 ## 権限
 
@@ -119,6 +120,18 @@ QAD liaison は各局の局長または担当leadが兼務する。独立した�
    ゲートと自動検査で適用する。
 5. `Learn`
    再発率と検出率を見て、基準を更新する。
+
+## QCD Operating Review
+
+QAD本部は `ops/collect-qcd-metrics.sh` の V1-V15 と `ops/qcd-operating-review.sh` の判定を使い、QCD を次の実行判断へ戻す。
+
+| QCD軸 | 観測 | 判断 |
+| --- | --- | --- |
+| Quality | gate pass rate, first-pass yield, defect density, rework | pass rate <80% または rework >20% なら gate を前倒しし、Review-to-Rule を起票する |
+| Cost | WIP, blocked, reviewer load, Codex run budget | WIP 超過または blocker 発生時は new task intake を止め、close / split / escalate を優先する |
+| Delivery | throughput, cycle time, stale issue, target checkpoint | stale >0 または cycle time 長期化時は scope cut / task split / stop を選ぶ |
+
+QCD review の出力は感想ではなく、`freeze_intake`, `move_gate_earlier`, `split_or_stop`, `escalate_blocker`, `continue` のいずれかの運用指示に落とす。
 
 ## 発足時の優先対象
 

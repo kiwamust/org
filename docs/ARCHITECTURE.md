@@ -199,6 +199,20 @@ PJ close 時: dispatch が全子タスクを一括 close。
 | ES-3/4 external-facing artifacts | 2 | reviewer / evidence 確保まで追加不可 |
 | Codex substantial runs without trace | 0 after grace | trace missing を improvement candidate 化 |
 
+## QCD Operating Loop
+
+Org は QCD を「後で見る指標」ではなく、Issue 運用を切り替える制御信号として使う。
+
+```text
+Issue QCD contract
+  -> collect-qcd-metrics
+  -> qcd-operating-review
+  -> freeze intake / move gate earlier / split or stop / escalate
+  -> Issue closeout qcd_actual
+```
+
+プロジェクトと Standard 以上のタスクは `qcd:` 契約を持つ。Quality は gate と defect budget、Cost は WIP / reviewer / Codex run budget、Delivery は next checkpoint / target close / batch size で表す。契約がない Issue は受け入れ可能だが、Operations は次の planning touch で契約補完を要求する。
+
 ## Safety Hooks
 
 PreToolUse hook (`ops/hooks/pre-gh-check.sh`) で gh コマンドの安全性を検証:
@@ -213,6 +227,7 @@ PreToolUse hook (`ops/hooks/pre-gh-check.sh`) で gh コマンドの安全性を
 | ------------------------ | --------------------------------- |
 | `dashboard.sh`           | 組織ダッシュボード（stale + QCD） |
 | `collect-qcd-metrics.sh` | V1-V15 メトリクス自動収集         |
+| `qcd-operating-review.sh` | QCD メトリクスを運用判断へ変換    |
 | `calc-project-qcd.sh`    | PJ 別 QCD 計算（D, C, ε, Π）      |
 | `resume-project.sh`      | PJ 状態復元（コンテキスト回復）   |
 | `audit-org-contract.sh`  | Authority/ES/Issue/WIP 契約監査   |

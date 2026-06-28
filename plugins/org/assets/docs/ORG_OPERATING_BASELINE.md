@@ -10,9 +10,11 @@ authority_order: Data-Evidence > Work > Life > Org > Codex
 
 # Org Operating Baseline
 
-This is the Codex plugin distribution copy of `docs/ORG_OPERATING_BASELINE.md`. Keep the root document and this file synchronized.
+Org is the execution subsystem for kiwamust and agent groups. It is not a knowledge base, a portfolio owner, or a source of observed truth. Its job is to move work through role, phase, WIP, gate, handoff, and closeout evidence without violating higher authority.
 
 ## Authority Ladder
+
+When subsystem state, judgment, or claims conflict, resolve by this order:
 
 ```text
 Data-Evidence > Work > Life > Org > Codex
@@ -20,33 +22,73 @@ Data-Evidence > Work > Life > Org > Codex
 
 | Rank | Subsystem | Final authority over | Constraint on lower layers |
 | ---: | --- | --- | --- |
-| 1 | Data-Evidence | observed facts, metrics, citations, lineage, confidence, access class, evidence admissibility | weak, stale, contradictory, or access-violating evidence stops lower work |
-| 2 | Work | ontology, meaning, claim state, artifact semantics, output readiness | unsupported Work claims cannot become supported in Life/Org/Codex |
-| 3 | Life | portfolio priority, continue/stop/integrate/publish, opportunity cost, final DoD | Org momentum cannot override Life stop/defer |
-| 4 | Org | execution plan, role assignment, phase, UQG, WIP, handoff, schedule | Org cannot pass Data-invalid, Work-unsupported, or Life-stopped work |
-| 5 | Codex | observation, draft, patch, tool execution, verification proposal, trace emission | Codex does not own long-term state |
+| 1 | Data-Evidence | observed facts, metrics, citations, lineage, confidence, access class, evidence admissibility | If evidence is weak, stale, contradictory, or access-violating, Work/Life/Org/Codex decisions stop. |
+| 2 | Work | ontology, meaning, claim state, source inventory, artifact semantics, output readiness | Life/Org/Codex cannot turn unsupported Work claims into supported claims. |
+| 3 | Life | portfolio priority, continue/stop/integrate/publish, opportunity cost, final personal DoD | Org momentum cannot override Life stop/defer decisions. |
+| 4 | Org | execution plan, role assignment, phase, UQG, WIP, handoff, schedule | Org cannot pass Data-invalid, Work-unsupported, or Life-stopped work. |
+| 5 | Codex | observation, draft, patch, tool execution, verification proposal, trace emission | Codex does not own long-term state until it is saved into Issue, Work artifact, or trace. |
+
+### Conflict Handling
+
+1. Data conflict: set the Org issue to blocked and record `blocked:evidence_conflict`.
+2. Claim conflict: return to Work; do not rewrite claim meaning in Org.
+3. Priority conflict: return to Life for continue/stop/defer/integrate.
+4. Execution conflict: Org decides phase, owner, WIP, and gate after higher gates are satisfied.
+5. Agent conflict: Codex output remains proposal/draft until incorporated into a higher subsystem artifact.
 
 ## Evidence Strictness
 
-| Level | Use | Allowed | Not allowed |
-| --- | --- | --- | --- |
-| ES-0 | private scratch, ideation | ideas, framing, private notes | external send, decision, canonical update |
-| ES-1 | reversible internal decision | backlog, prototype, internal draft | client-facing assertion, public claim |
-| ES-2 | business experiment, lightweight external test | MVP test, first sales call, hypothesis check | high-value contract, official proposal, research conclusion |
-| ES-3 | client-facing, public, strategic artifact | proposal, public deck, paper draft, major decision | legal/procurement/research conclusion without verification |
-| ES-4 | high-irreversibility, procurement, legal, research result, financial commitment | final submission, contract premise, regulated/public-sector claim | waiver without explicit Life/Data/Work approval |
+Evidence Strictness is selected per project by externality, reversibility, money impact, publicness, privacy, legal/procurement risk, and research risk.
 
-Record `uncertainty_band`, `sample_size`, `source_quality`, `contradiction_status`, and `decision_reversibility` when strict statistical intervals are unavailable.
+| Level | Use | Quantitative claim | Qualitative claim | Allowed | Not allowed |
+| --- | --- | --- | --- | --- | --- |
+| ES-0 | private scratch, ideation | no CI required | hypothesis explicitly marked | ideas, framing, private notes | external send, decision, canonical update |
+| ES-1 | reversible internal decision | broad uncertainty acceptable | one source family plus uncertainty | backlog, prototype, internal draft | client-facing assertion, public claim |
+| ES-2 | business experiment, lightweight external test | target 80% confidence equivalent, wide intervals allowed | at least two evidence lines or explicit falsifier | MVP test, first sales call, hypothesis check | high-value contract, official proposal, research conclusion |
+| ES-3 | client-facing, public, strategic artifact | target 90% confidence equivalent | primary sources preferred, 2-3 line triangulation, review | proposal, public deck, paper draft, major decision | legal/procurement/research conclusion without verification |
+| ES-4 | high-irreversibility, procurement, legal, research result, financial commitment | target 95% confidence equivalent | official source or reproducible evidence plus second review | final submission, contract premise, regulated/public-sector claim | waiver without explicit Life/Data/Work approval |
+
+If a strict statistical interval cannot be created, record `uncertainty_band`, `sample_size`, `source_quality`, `contradiction_status`, and `decision_reversibility` in the evidence package.
+
+## Org Ownership
+
+Org owns:
+
+- execution issue, task, phase, role, owner
+- UQG and project-specific gates
+- WIP limit, blocked/stale/escalation state
+- handoff package and closeout evidence
+- quality signal and cycle-time metric generation
+
+Org does not own:
+
+- evidence admissibility, which belongs to Data-Evidence
+- claim or artifact meaning, which belongs to Work
+- portfolio priority and final DoD, which belong to Life
+- long-term state from Codex sessions unless saved as Issue, artifact, or trace
 
 ## Execution Contract
+
+Every execution unit follows this path:
 
 ```text
 Input package -> Role assignment -> Execution -> Gate -> Closeout evidence -> Next circulation
 ```
 
-Every project or task carries parent Life project or Work output, required evidence strictness, role, phase, expected return, gate, closeout evidence, and next circulation.
+Every project or task must carry:
+
+- parent Life project or Work output
+- required evidence strictness
+- role
+- phase
+- expected return
+- gate
+- closeout evidence
+- next circulation
 
 ## Issue Contract
+
+Use this shape in project and task bodies when a GitHub form does not capture the fields explicitly:
 
 ```yaml
 issue_id: ""
@@ -78,7 +120,19 @@ next_circulation: "Data-Evidence|Work|Life|Org|Codex|me"
 | fail | Cannot advance | remediation task or stop reason exists |
 | waived | Conditional advance | owner, reason, expiry, and risk acceptance are recorded; ES-4 waiver is exceptional |
 
+### ES-Aware Gate Mapping
+
+| ES | Org gate | Required review | Closeout evidence |
+| --- | --- | --- | --- |
+| ES-0 | lightweight | self-check | draft, note, next question |
+| ES-1 | internal QA | role owner | artifact diff, known uncertainty |
+| ES-2 | experiment gate | QA Agent plus Work check | audience plan, claim status, signal capture |
+| ES-3 | external-facing gate | QA Agent plus Work plus Data-Evidence check | citations, claim support, approval request |
+| ES-4 | high-stakes gate | Data-Evidence plus Work plus Life approval plus second review | official source trace, reproducibility, compliance matrix, explicit approval |
+
 ## WIP Safety Limits
+
+WIP limits are sovereignty and quality controls, not productivity targets.
 
 | WIP type | Default limit | Exceeding limit |
 | --- | ---: | --- |
@@ -87,22 +141,87 @@ next_circulation: "Data-Evidence|Work|Life|Org|Codex|me"
 | ES-3/4 external-facing artifacts | 2 | Add reviewer/evidence before intake |
 | Codex substantial runs without trace | 0 after grace | Convert missing trace into improvement candidate |
 
+## QCD Operating Model
+
+Org optimizes project/task QCD by reducing rework, limiting WIP, and cutting ambiguous scope before execution expands. QCD is not a retrospective score only; it is an operating contract that decides whether intake continues, gates move earlier, work is split, or work stops.
+
+### QCD Contract
+
+Every project and Standard-or-higher task should carry this contract in the Issue body:
+
+```yaml
+qcd:
+  quality_target:
+    gate_type: "IQG|PQG|OQG|project-specific"
+    pass_condition: ""
+    defect_budget: "0 critical; <=N minor"
+  delivery_target:
+    next_checkpoint: "YYYY-MM-DD or explicit event"
+    target_close: "YYYY-MM-DD or none + reason"
+    batch_size: "single artifact|one gate|one decision"
+  cost_budget:
+    wip_slots: 1
+    review_budget: "self|one reviewer|two reviewers"
+    codex_run_budget: "bounded by artifact + verification"
+  leading_indicators:
+    - ""
+  stop_rules:
+    - ""
+```
+
+`quality_target` defines the evidence bar. `delivery_target` defines the next observable checkpoint, not a vague desired date. `cost_budget` is mainly attention cost: WIP slots, review load, and Codex run count. If an Issue lacks a QCD contract, dispatch can still accept it, but Operations treats it as lower operational readiness until the next planning touch.
+
+### QCD Decision Rules
+
+| Signal | Threshold | Org action |
+| --- | --- | --- |
+| WIP exceeds limit | active tasks > 7 or active parents > 3 | Freeze new intake; close, merge, or defer first |
+| Gate pass rate falls | less than 80% over recent gates | Move the relevant gate earlier and create an improvement candidate |
+| Rework rate rises | greater than 20% | Tighten IQG/PQG; split broad tasks into smaller batches |
+| Any blocked issue | blocked count > 0 | Escalate to Data-Evidence / Work / Life / user based on blocker authority |
+| Stale execution | execute issue not updated for 7 days | Split, stop, or force a next checkpoint comment |
+| Cycle time stretches | average closed task cycle time > target | Cut scope or split the work package |
+| ES-3/4 external WIP exceeds limit | more than 2 artifacts | Stop external artifact intake until reviewer/evidence capacity exists |
+| Closeout lacks trace or verification | any substantial Codex run | Create an improvement candidate; do not mark operationally done |
+
+### QCD Closeout
+
+Closeout evidence should report actual QCD against the contract:
+
+```yaml
+qcd_actual:
+  quality_result: "pass|fail|waived + evidence"
+  delivery_result: "closed on target|late|split|stopped"
+  cost_result: "within budget|over WIP|extra review|extra run"
+  learning:
+    defect_codes: []
+    rule_update_needed: true|false
+```
+
 ## Role Contract
 
-| Role | Purpose | Output | Prohibited |
+| Role | Purpose | Input | Output | Prohibited |
+| --- | --- | --- | --- | --- |
+| Strategist Agent | Scope and route the project | Life DoD, Work output, Data profile | execution plan, issue breakdown | portfolio final decision |
+| Research Agent | Gather source and evidence candidates | claim, question, strictness | source pack, evidence gaps | evidence admissibility assertion |
+| Drafting Agent | Draft artifacts | Work claim, audience, format | draft, revision notes | unsupported claim assertion |
+| QA Gate Agent | Run UQG and project gates | artifact, claim, evidence refs | pass/fail/waive recommendation | waiver without owner/expiry |
+| Sales Agent | Prepare audience and proposal flow | offer, target, constraints | outreach draft, objection log | external send without approval |
+| Research Writing Agent | Run QCD paper flow | claim ledger, data, outline | section draft, figure plan | empirical claim without lineage |
+| Data Steward Agent | Package trace, metric, evidence | run outputs, source refs | Data-Evidence ingest package | restricted raw upload without approval |
+| Codex Executor | Tool execution, patch, verification | bounded task | trace, artifact, verification | long-term state ownership |
+
+## Project Gates
+
+| Project | Default gate | ES | Gate focus |
 | --- | --- | --- | --- |
-| Strategist Agent | scope and route the project | execution plan, issue breakdown | portfolio final decision |
-| Research Agent | gather evidence candidates | source pack, evidence gaps | evidence admissibility assertion |
-| Drafting Agent | draft artifacts | draft, revision notes | unsupported claim assertion |
-| QA Gate Agent | run gates | pass/fail/waive recommendation | waiver without owner/expiry |
-| Sales Agent | prepare audience/proposal flow | outreach draft, objection log | external send without approval |
-| Research Writing Agent | run QCD paper flow | section draft, figure plan | empirical claim without lineage |
-| Data Steward Agent | package trace/metric/evidence | Data-Evidence ingest package | restricted raw upload without approval |
-| Codex Executor | execute tools/patch/verification | trace, artifact, verification | long-term state ownership |
+| otoprism | MVP experiment gate | ES-2; public/external claims are ES-3 | offer clarity, audience fit, interview ethics, signal capture |
+| public-service proposal | proposal/compliance gate | ES-3/4 | RFP compliance, official facts, value proof, delivery feasibility, approval |
+| QCD paper | research quality gate | ES-3/4 | novelty, related work, method, data lineage, reproducibility, claim discipline |
 
-## First Pilot
+## First Pilot: otoprism Business Start
 
-Default first pilot is `otoprism business start`, with ES-2 as the baseline and ES-3 for public/external claims.
+The first pilot is `otoprism business start` unless a higher-priority Life deadline overrides it. The objective is one evidence-backed subsystem loop, not maximum scope.
 
 | Issue | Role | Strictness | Done |
 | --- | --- | --- | --- |
@@ -113,6 +232,59 @@ Default first pilot is `otoprism business start`, with ES-2 as the baseline and 
 | OTO-ORG-05 Audience list / outreach draft | Sales Agent | ES-2/3 | target segment and outreach draft exist; send waits for Life approval |
 | OTO-ORG-06 Signal capture setup | Data Steward Agent | ES-2 | feedback fields, metric, and evidence refs are defined |
 | OTO-ORG-07 Week1 closeout | Strategist plus Data Steward | ES-2 | signal, gate, trace, and decision package return to Life |
+
+Pilot WIP rules:
+
+- Maximum 5 simultaneous active pilot issues.
+- Maximum 2 external-facing artifacts.
+- No outreach is sent until signal capture is defined.
+- Codex substantial runs leave trace or verification.
+- Gate fail is a task-generation condition, not a worker failure.
+
+## Audit Methods
+
+Issue Field Audit checks active issues for `parent_project`, `work_ref`, `data_profile`, `role`, `phase`, `gate`, `next_circulation`, and `closeout_evidence`. P0/P1 issues pass only when no critical field is missing.
+
+Handoff Test uses this minimal package:
+
+```yaml
+handoff_package:
+  issue_id: ""
+  role: ""
+  phase: ""
+  context: ""
+  input_refs: []
+  strictness: "ES-0..ES-4"
+  constraints: []
+  expected_return: ""
+  gate: ""
+  next_circulation: ""
+```
+
+Gate Audit checks strictness fit, pass/fail/waive reason, remediation task, waiver owner/expiry, ES-4 waiver absence, and contradiction against Data-Evidence/Work/Life.
+
+Flow Metrics Review tracks throughput, cycle time, rework rate, blocked count, stale count, and scope creep. Triggers:
+
+- throughput grows without signal: reduce WIP
+- long cycle time: split or stop issue
+- rework rate greater than 20%: move gate earlier
+- blocked count grows: escalate to Data/Work/Life
+- stale issue older than 7 days: review
+- scope creep greater than 15%: Life review
+
+Operations runs `ops/qcd-operating-review.sh` after `ops/collect-qcd-metrics.sh` when deciding whether intake can continue.
+
+## Stop Conditions
+
+| Condition | Org response |
+| --- | --- |
+| Data-Evidence invalidates key evidence | mark blocked:data and return to Work/Life |
+| Work claim is unsupported | artifact gate fails and returns to draft |
+| Life stops or defers | close/freeze active tasks and return retained asset to Work |
+| WIP limit exceeded | freeze new intake |
+| ES-4 lacks reviewer, official source, or approval | prohibit external-facing action |
+| Codex lacks trace or verification | do not mark done; create improvement candidate |
+| handoff package is insufficient | fix issue contract defect |
 
 ## Completion Levels
 

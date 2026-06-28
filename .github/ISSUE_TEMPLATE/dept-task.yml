@@ -124,6 +124,31 @@ body:
     validations:
       required: true
   - type: textarea
+    id: qcd-contract
+    attributes:
+      label: QCD contract
+      description: Quality / Cost / Delivery の運用契約。Standard 以上では必須
+      value: |
+        qcd:
+          quality_target:
+            gate_type:
+            pass_condition:
+            defect_budget:
+          delivery_target:
+            next_checkpoint:
+            target_close:
+            batch_size:
+          cost_budget:
+            wip_slots: 1
+            review_budget:
+            codex_run_budget:
+          leading_indicators:
+            -
+          stop_rules:
+            -
+    validations:
+      required: true
+  - type: textarea
     id: closeout-evidence
     attributes:
       label: closeout_evidence

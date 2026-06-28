@@ -185,7 +185,19 @@ gh issue edit {number} --repo kiwamust/org \
   --remove-label "org:status/green" --add-label "org:status/yellow"
 ```
 
-## Workflow D: 改善提案
+## Workflow D: QCD Operating Review
+
+プロジェクト/タスクの QCD は測定で終わらせない。`ops/collect-qcd-metrics.sh` の V1-V15 と `ops/qcd-operating-review.sh` の判定を使い、次の運用指示へ変換する。
+
+| QCD軸 | 観測 | 運用指示 |
+| --- | --- | --- |
+| Quality | gate pass rate / first-pass yield / defect density / rework | `move_gate_earlier` または `review_to_rule` |
+| Cost | WIP / blocked / reviewer load / Codex run budget | `freeze_intake` または `escalate_blocker` |
+| Delivery | throughput / cycle time / stale issue / checkpoint adherence | `split_or_stop` または `force_checkpoint` |
+
+QCD review で `fail` が出た場合、Operations は新規 task intake よりも close / split / gate 前倒し / blocker escalation を優先する。
+
+## Workflow E: 改善提案
 
 品質ゲートの不合格パターンを分析し、プロセス改善を提案:
 
