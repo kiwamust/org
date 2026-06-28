@@ -1,9 +1,11 @@
 # Research Support AI
 
-Status: active seed
+Status: package v0.1 for IQG
 Created: 2026-06-09
 Life parent: kiwamust/life#69
 org issue: kiwamust/org#23
+org task: kiwamust/org#25
+readiness gate: kiwamust/org#26
 Work PM: [[PM/PJ-C-研究支援AI-MVP/project-charter]]
 Scenario: [[AIと日本社会の3ヵ年シナリオ#PW3 研究支援AI MVP]]
 
@@ -33,6 +35,14 @@ Scenario: [[AIと日本社会の3ヵ年シナリオ#PW3 研究支援AI MVP]]
 
 - [[org/research/research-support-ai/eval-checklist|eval-checklist]]
 - [[org/research/research-support-ai/pilot-protocol|pilot-protocol]]
+- [[org/research/research-support-ai/first-pilot-run|first-pilot-run]]
+
+## Pilot Boundary
+
+- Markdown input/output only. Do not start UI or product-surface work in this package.
+- This package is ready for `kiwamust/org#26` inspection, not approved for a 3-5 person pilot until that gate records pass / fail / waived.
+- The first run must capture source grounding, reuse trace, correction load, time saved, and return intent.
+- Strong claims must point back to source IDs; uncertainty and contradictions must stay visible instead of being smoothed into summary prose.
 
 ## Non-Goals
 

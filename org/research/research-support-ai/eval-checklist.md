@@ -1,9 +1,11 @@
 # Research Support AI Eval Checklist
 
-Status: draft
+Status: v0.1 gate candidate
 Created: 2026-06-09
 Project: [[org/research/research-support-ai/README]]
 PM: [[PM/PJ-C-研究支援AI-MVP/project-charter]]
+Org task: kiwamust/org#25
+Readiness gate: kiwamust/org#26
 
 ## Evaluation Target
 
@@ -36,6 +38,29 @@ task:
 | contradiction handling | 反例・制約・弱い根拠が明示されている | human rubric |
 | reuse trace | 企画、文章、研究メモのどこかに転用された | human |
 | hallucination control | source にない強い断定がない | human + spot check |
+
+## Required Fields For Each Run
+
+```yaml
+pilot_run_id:
+input_ref: "org/research/research-support-ai/first-pilot-run.md#input-package"
+output_ref: "org/research/research-support-ai/first-pilot-run.md#output-package"
+real_output_ref:
+time_saved_minutes:
+reuse_trace:
+  - generated_section:
+    reused_in:
+    reuse_type: "verbatim|edited|structure_only|idea_only|none"
+    note:
+grounding_spot_check:
+  sampled_claims_count:
+  supported_claims_count:
+  unsupported_claim_ids: []
+  correction_notes: []
+correction_load: "none|light|heavy|rewrite"
+return_intent: "yes|no|conditional"
+return_intent_reason:
+```
 
 ## Rubric
 
@@ -70,13 +95,22 @@ task:
 | metric | type | note |
 |---|---|---|
 | time_saved_minutes | quantitative | user estimate |
-| reused_sections_count | quantitative | real output trace |
+| reuse_trace | structured | generated section -> real output ref |
+| reused_sections_count | quantitative | count from reuse_trace |
 | source_grounding_rate | quantitative | grounded claims / total claims |
+| grounding_spot_check | structured | sampled claim IDs, support status, correction notes |
 | correction_load | ordinal | none / light / heavy / rewrite |
-| user_return_intent | binary | use again or not |
+| return_intent | categorical | yes / no / conditional |
 
 ## First Task Bank
 
 1. 既存クリップ3-5本から、研究支援AIの評価設計を作る
 2. `研究コモンズ再編` 関連ノートから、研究支援AIの勝ち筋・負け筋を抽出する
 3. OtoPrism の `moment-anchored chat` を、文献探索UIの anchor pattern に翻訳する
+
+## Gate Minimum For org#26
+
+- Input form contains topic, purpose, source set, constraints, and intended output.
+- Output form separates source inventory, claims, evidence, contradictions, open questions, point map, reusable summary, and grounding spot check.
+- Eval record contains time saved, reuse trace, grounding spot check, correction load, and return intent.
+- No 3-5 person pilot starts before `kiwamust/org#26` records pass / fail / waived.
