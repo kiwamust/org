@@ -6,7 +6,7 @@ set -euo pipefail
 
 REPO="kiwamust/org"
 DATE=$(date +%Y-%m-%d)
-OUTPUT_DIR="$HOME/Desktop/work/work/org/data/metrics"
+OUTPUT_DIR="$HOME/Work/work/org/data/metrics"
 OUTPUT_FORMAT="table"
 
 # --- Usage ---
@@ -25,8 +25,9 @@ Metrics:
   Velocity (V1-V5):  throughput, cycle time, gate pass rate, rework rate, lead time
   Quality (V6-V10):  first-pass yield, defect density, scope creep, red status, escalations
   Entropy (V11-V15): WIP count, dept utilization, blocked, stale, cross-dept
+  Execution: org Issue execution inventory by phase, active task inventory, pending gates, QCD contract gaps
 
-Output: ~/Desktop/work/work/org/data/metrics/YYYY-MM-DD.json
+Output: ~/Work/work/org/data/metrics/YYYY-MM-DD.json
 USAGE
   exit 0
 }
@@ -48,43 +49,56 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# --- Helper: count issues matching labels ---
-count_issues() {
-  local labels="$1"
-  local state="${2:-all}"
-  gh issue list --repo "$REPO" --label "$labels" --state "$state" --json number --jq 'length' 2>/dev/null || echo "0"
+# --- Fail-closed observation helpers ---
+source_failure() {
+  printf '{"date":"%s","repo":"%s","source_state":"UNKNOWN","gate":"BLOCK","metrics":null}\n' \
+    "$DATE" "$REPO"
+  echo "Required GitHub observation failed; metrics were not written." >&2
+  exit 70
 }
 
-# --- Helper: get issues as JSON array ---
-get_issues() {
-  local labels="$1"
-  local state="${2:-all}"
-  gh issue list --repo "$REPO" --label "$labels" --state "$state" --limit 500 \
-    --json number,title,state,labels,createdAt,closedAt,updatedAt 2>/dev/null || echo "[]"
+capture_gh() {
+  local destination="$1"
+  shift
+  local value
+  if ! value=$(gh "$@" 2>/dev/null); then
+    source_failure
+  fi
+  printf -v "$destination" '%s' "$value"
+}
+
+capture_issue_count() {
+  local destination="$1"
+  local labels="$2"
+  local state="${3:-all}"
+  capture_gh "$destination" issue list --repo "$REPO" --label "$labels" \
+    --state "$state" --json number --jq 'length'
 }
 
 # ============================================================
 # V1: Task throughput (tasks closed in last 7 days)
 # ============================================================
 SEVEN_DAYS_AGO=$(date -v-7d +%Y-%m-%d 2>/dev/null || date -d '7 days ago' +%Y-%m-%d 2>/dev/null || echo "")
-V1=$(gh issue list --repo "$REPO" --label "org:type/task" --state closed --json closedAt \
-  --jq "[.[] | select(.closedAt >= \"${SEVEN_DAYS_AGO}T00:00:00Z\")] | length" 2>/dev/null || echo "0")
+capture_gh V1 issue list --repo "$REPO" --label "org:type/task" --state closed \
+  --json closedAt \
+  --jq "[.[] | select(.closedAt >= \"${SEVEN_DAYS_AGO}T00:00:00Z\")] | length"
 
 # ============================================================
 # V2: Cycle time (avg days from execute to done for closed tasks)
 # Approximation: days between createdAt and closedAt for done tasks
 # ============================================================
-CYCLE_TIMES=$(gh issue list --repo "$REPO" --label "org:type/task" --state closed --json createdAt,closedAt \
+capture_gh CYCLE_TIMES issue list --repo "$REPO" --label "org:type/task" \
+  --state closed --json createdAt,closedAt \
   --jq '[.[] | select(.closedAt != null) |
     (((.closedAt | fromdateiso8601) - (.createdAt | fromdateiso8601)) / 86400)] |
-    if length > 0 then (add / length | . * 10 | round / 10) else 0 end' 2>/dev/null || echo "0")
+    if length > 0 then (add / length | . * 10 | round / 10) else 0 end'
 V2="${CYCLE_TIMES}"
 
 # ============================================================
 # V3: Gate pass rate
 # ============================================================
-GATE_PASS=$(count_issues "org:quality/gate-pass")
-GATE_FAIL=$(count_issues "org:quality/gate-fail")
+capture_issue_count GATE_PASS "org:quality/gate-pass"
+capture_issue_count GATE_FAIL "org:quality/gate-fail"
 GATE_TOTAL=$((GATE_PASS + GATE_FAIL))
 if [ "$GATE_TOTAL" -gt 0 ]; then
   # bash integer math: multiply by 1000 for one decimal place
@@ -98,8 +112,9 @@ fi
 # Approximation: tasks currently in execute that previously had review label
 # With small dataset, check for tasks with gate-fail
 # ============================================================
-REWORK_TASKS=$(gh issue list --repo "$REPO" --label "org:type/task,org:quality/gate-fail" --state all --json number --jq 'length' 2>/dev/null || echo "0")
-TOTAL_TASKS=$(count_issues "org:type/task")
+capture_gh REWORK_TASKS issue list --repo "$REPO" \
+  --label "org:type/task,org:quality/gate-fail" --state all --json number --jq 'length'
+capture_issue_count TOTAL_TASKS "org:type/task"
 if [ "$TOTAL_TASKS" -gt 0 ] && [ "$TOTAL_TASKS" != "0" ]; then
   V4=$(echo "$REWORK_TASKS $TOTAL_TASKS" | awk '{printf "%.1f", ($1/$2)*100}')
 else
@@ -109,10 +124,10 @@ fi
 # ============================================================
 # V5: Lead time (avg days from creation to close, all issue types)
 # ============================================================
-LEAD_TIMES=$(gh issue list --repo "$REPO" --state closed --json createdAt,closedAt \
+capture_gh LEAD_TIMES issue list --repo "$REPO" --state closed --json createdAt,closedAt \
   --jq '[.[] | select(.closedAt != null) |
     (((.closedAt | fromdateiso8601) - (.createdAt | fromdateiso8601)) / 86400)] |
-    if length > 0 then (add / length | . * 10 | round / 10) else 0 end' 2>/dev/null || echo "0")
+    if length > 0 then (add / length | . * 10 | round / 10) else 0 end'
 V5="${LEAD_TIMES}"
 
 # ============================================================
@@ -120,12 +135,14 @@ V5="${LEAD_TIMES}"
 # gate-pass without any prior gate-fail
 # Approximation: gate-pass that are NOT also gate-fail
 # ============================================================
-PASS_ONLY=$(gh issue list --repo "$REPO" --label "org:quality/gate-pass" --state all --json number \
-  --jq '[.[].number]' 2>/dev/null || echo "[]")
-FAIL_NUMBERS=$(gh issue list --repo "$REPO" --label "org:quality/gate-fail" --state all --json number \
-  --jq '[.[].number]' 2>/dev/null || echo "[]")
+capture_gh PASS_ONLY issue list --repo "$REPO" --label "org:quality/gate-pass" \
+  --state all --json number --jq '[.[].number]'
+capture_gh FAIL_NUMBERS issue list --repo "$REPO" --label "org:quality/gate-fail" \
+  --state all --json number --jq '[.[].number]'
 # Count pass numbers not in fail numbers
-FIRST_PASS_COUNT=$(echo "$PASS_ONLY" "$FAIL_NUMBERS" | jq -s '.[0] - .[1] | length' 2>/dev/null || echo "0")
+if ! FIRST_PASS_COUNT=$(echo "$PASS_ONLY" "$FAIL_NUMBERS" | jq -s '.[0] - .[1] | length'); then
+  source_failure
+fi
 if [ "$GATE_PASS" -gt 0 ]; then
   V6=$(echo "$FIRST_PASS_COUNT $GATE_PASS" | awk '{printf "%.1f", ($1/$2)*100}')
 else
@@ -149,7 +166,7 @@ V8="0"
 # ============================================================
 # V9: Status changes to red
 # ============================================================
-V9=$(count_issues "org:status/red" "open")
+capture_issue_count V9 "org:status/red" "open"
 
 # ============================================================
 # V10: Escalation count (placeholder — would need event tracking)
@@ -159,30 +176,31 @@ V10="0"
 # ============================================================
 # V11: WIP count (open issues in execute phase)
 # ============================================================
-V11=$(count_issues "org:phase/execute" "open")
+capture_issue_count V11 "org:phase/execute" "open"
 
 # ============================================================
 # V12: Department utilization (issues per department)
 # ============================================================
-DEPT_rnd=$(count_issues "org:dept/rnd" "open")
-DEPT_brand=$(count_issues "org:dept/brand" "open")
-DEPT_emergingtech=$(count_issues "org:dept/emergingtech" "open")
-DEPT_engineering=$(count_issues "org:dept/engineering" "open")
-DEPT_operations=$(count_issues "org:dept/operations" "open")
-DEPT_cross=$(count_issues "org:dept/cross" "open")
+capture_issue_count DEPT_rnd "org:dept/rnd" "open"
+capture_issue_count DEPT_brand "org:dept/brand" "open"
+capture_issue_count DEPT_emergingtech "org:dept/emergingtech" "open"
+capture_issue_count DEPT_engineering "org:dept/engineering" "open"
+capture_issue_count DEPT_operations "org:dept/operations" "open"
+capture_issue_count DEPT_cross "org:dept/cross" "open"
 V12=$((DEPT_rnd + DEPT_brand + DEPT_emergingtech + DEPT_engineering + DEPT_operations + DEPT_cross))
 
 # ============================================================
 # V13: Blocked issues count
 # ============================================================
-V13=$(count_issues "org:phase/blocked" "open")
+capture_issue_count V13 "org:phase/blocked" "open"
 
 # ============================================================
 # V14: Stale issues (>7 days no update in execute phase)
 # ============================================================
 if [ -n "$SEVEN_DAYS_AGO" ]; then
-  V14=$(gh issue list --repo "$REPO" --label "org:phase/execute" --state open --json number,updatedAt \
-    --jq "[.[] | select(.updatedAt < \"${SEVEN_DAYS_AGO}T00:00:00Z\")] | length" 2>/dev/null || echo "0")
+  capture_gh V14 issue list --repo "$REPO" --label "org:phase/execute" \
+    --state open --json number,updatedAt \
+    --jq "[.[] | select(.updatedAt < \"${SEVEN_DAYS_AGO}T00:00:00Z\")] | length"
 else
   V14="0"
 fi
@@ -190,7 +208,46 @@ fi
 # ============================================================
 # V15: Cross-department issues count
 # ============================================================
-V15=$(count_issues "org:dept/cross" "open")
+capture_issue_count V15 "org:dept/cross" "open"
+
+# ============================================================
+# Execution inventory: org Issue execution state
+# ============================================================
+capture_gh OPEN_ISSUES_JSON issue list --repo "$REPO" --state open --limit 500 \
+  --json number,title,state,labels,body,createdAt,closedAt,updatedAt
+
+if ! EXECUTION_JSON=$(printf '%s' "$OPEN_ISSUES_JSON" | jq '
+  def has_label($name):
+    any(.labels[]?; ((if type == "string" then . else .name end) == $name));
+  def active_issue:
+    (.state | ascii_downcase) != "closed"
+    and (has_label("org:phase/done") | not)
+    and (has_label("org:phase/blocked") | not);
+  def qcd_ready:
+    ((.body // "") | test("qcd:"; "i"))
+    and ((.body // "") | test("quality_target|quality target"; "i"))
+    and ((.body // "") | test("delivery_target|delivery target|next_checkpoint"; "i"))
+    and ((.body // "") | test("cost_budget|cost budget|wip_slots"; "i"))
+    and ((.body // "") | test("stop_rules|stop rule"; "i"));
+  {
+    open_task_count: [.[] | select(has_label("org:type/task"))] | length,
+    active_task_inventory: [.[] | select(has_label("org:type/task") and active_issue)] | length,
+    active_parent_projects: [.[] | select(has_label("org:type/project") and active_issue)] | length,
+    intake_inventory: [.[] | select(has_label("org:type/task") and has_label("org:phase/intake"))] | length,
+    planning_inventory: [.[] | select(has_label("org:type/task") and has_label("org:phase/planning"))] | length,
+    execute_wip_count: [.[] | select(has_label("org:type/task") and has_label("org:phase/execute"))] | length,
+    review_wip_count: [.[] | select(has_label("org:type/task") and has_label("org:phase/review"))] | length,
+    blocked_count: [.[] | select(has_label("org:type/task") and has_label("org:phase/blocked"))] | length,
+    gate_pending_count: [.[] | select(has_label("org:type/quality-gate") and has_label("org:quality/gate-pending"))] | length,
+    qcd_contract_missing_count: [
+      .[]
+      | select((has_label("org:type/project") or has_label("org:type/task")) and active_issue)
+      | select(qcd_ready | not)
+    ] | length
+  }
+'); then
+  source_failure
+fi
 
 # ============================================================
 # Output
@@ -204,6 +261,8 @@ if [ "$OUTPUT_FORMAT" = "json" ]; then
 {
   "date": "$DATE",
   "repo": "$REPO",
+  "source_state": "OBSERVED",
+  "gate": "PASS",
   "velocity": {
     "V1_throughput_weekly": $V1,
     "V2_cycle_time_days": $V2,
@@ -225,7 +284,8 @@ if [ "$OUTPUT_FORMAT" = "json" ]; then
     "V13_blocked_count": $V13,
     "V14_stale_count": $V14,
     "V15_cross_dept_count": $V15
-  }
+  },
+  "execution": $EXECUTION_JSON
 }
 JSON
 )
@@ -270,6 +330,17 @@ else
   printf "  V14 Stale count (>7d)          : %s\n" "$V14"
   printf "  V15 Cross-dept count           : %s\n" "$V15"
   echo ""
+  echo "## Execution"
+  printf "  Open task count                : %s\n" "$(jq -r '.open_task_count' <<<"$EXECUTION_JSON")"
+  printf "  Active task inventory          : %s\n" "$(jq -r '.active_task_inventory' <<<"$EXECUTION_JSON")"
+  printf "  Active parent projects         : %s\n" "$(jq -r '.active_parent_projects' <<<"$EXECUTION_JSON")"
+  printf "  Planning inventory             : %s\n" "$(jq -r '.planning_inventory' <<<"$EXECUTION_JSON")"
+  printf "  Execute WIP                    : %s\n" "$(jq -r '.execute_wip_count' <<<"$EXECUTION_JSON")"
+  printf "  Review WIP                     : %s\n" "$(jq -r '.review_wip_count' <<<"$EXECUTION_JSON")"
+  printf "  Blocked tasks                  : %s\n" "$(jq -r '.blocked_count' <<<"$EXECUTION_JSON")"
+  printf "  Pending gates                  : %s\n" "$(jq -r '.gate_pending_count' <<<"$EXECUTION_JSON")"
+  printf "  QCD contract gaps              : %s\n" "$(jq -r '.qcd_contract_missing_count' <<<"$EXECUTION_JSON")"
+  echo ""
   echo "============================================"
 
   # Also save JSON
@@ -277,6 +348,8 @@ else
 {
   "date": "$DATE",
   "repo": "$REPO",
+  "source_state": "OBSERVED",
+  "gate": "PASS",
   "velocity": {
     "V1_throughput_weekly": $V1,
     "V2_cycle_time_days": $V2,
@@ -298,7 +371,8 @@ else
     "V13_blocked_count": $V13,
     "V14_stale_count": $V14,
     "V15_cross_dept_count": $V15
-  }
+  },
+  "execution": $EXECUTION_JSON
 }
 JSON
 )

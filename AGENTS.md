@@ -117,11 +117,11 @@ org:gbt/{generation,behavior,target}
 
 ## 共有知識基盤
 
-- Obsidian Vault: `~/Desktop/work/work`
-- 成果物保存先: `~/Desktop/work/work/org/`
+- Obsidian Vault: `~/Work/work`
+- 成果物保存先: `~/Work/work/org/`
 
 ```
-~/Desktop/work/work/org/
+~/Work/work/org/
 ├── projects/PJ-{名}/           # プロジェクト成果物
 ├── research/{テーマ}/          # R&D局の調査成果物
 ├── brand/{作品名}/             # Brand局のコンテンツ成果物
