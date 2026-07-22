@@ -1,0 +1,23 @@
+{
+  "skill_name": "org-machine-proof",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ヤコビアン予想の反例候補を、原問題からLeanと独立replayまで機械検証して。",
+      "expected_output": "Uses the tracked Jacobian adapter, runs every negative control, and reports certificate, review, and publication states separately.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "この未解決組合せ論問題の証明候補をCodexで検証可能なcertificate pipelineにしたい。既存のヤコビアン検証器をそのまま流用できる？",
+      "expected_output": "Triggers the skill but refuses analogy-only reuse; requires a problem-specific oracle, falsifiers, formal adapter, and cold verifier.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "ヤコビアン行列の計算方法を大学一年生向けに説明して。",
+      "expected_output": "Does not launch the proof-line workflow because this is an explanatory request without a proof or counterexample verification task.",
+      "files": []
+    }
+  ]
+}
